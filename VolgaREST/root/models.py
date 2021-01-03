@@ -5,7 +5,7 @@ import os, binascii
 
 class ShopModel(models.Model):
 
-   token = models.BinaryField(max_length=20, primary_key=True)
+   token = models.CharField(max_length=40, primary_key=True)
 
    owner = models.CharField(max_length=128)
    shop = models.CharField(max_length=25)
@@ -17,7 +17,7 @@ class ShopModel(models.Model):
    password = models.CharField(max_length=75)
 
    def save(self, *args, **kwargs):
-      self.token = binascii.hexlify(os.urandom(10)).decode()
+      self.token = binascii.hexlify(os.urandom(20)).decode()
       return super().save(*args, **kwargs)
 
    def __str__(self):
