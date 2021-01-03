@@ -13,7 +13,7 @@ class ShopModel(models.Model):
    city = models.CharField(max_length=100)
    address = models.CharField(max_length=95, blank=True, null=True)
    foundation = models.CharField(max_length=10, blank=True, null=True)
-   email = models.EmailField(max_length=125, unique=True)
+   email = models.EmailField(max_length=125, unique=True, error_messages={'unique': 'Otra tienda usa este email.'})
    password = models.CharField(max_length=75)
 
    def save(self, *args, **kwargs):
