@@ -11,11 +11,19 @@ class LogupSerializer(ModelSerializer):
          'shop',
          'country',
          'city',
-         'address',
-         'foundation',
+         'address', # allow blank
+         'foundation', # allow blank
          'email',
          'password'
       ]
+      extra_kwargs = {}
+      for field in fields:
+         if field not in ['address', 'foundation']:
+            extra_kwargs[field] = {
+               'error_messages': {
+                  'blank': 'Este campo es requerido.'
+               }
+            }
    
    def validate(self, data):
       shop = ShopModel.objects.filter(shop=data['shop'], owner=data['owner'])
