@@ -15,6 +15,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # My apps:
+    'VolgaREST.root',
     # 3rd frameworks apps:
     'rest_framework',
     'corsheaders'
