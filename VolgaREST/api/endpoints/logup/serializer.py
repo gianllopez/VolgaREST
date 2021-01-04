@@ -28,5 +28,5 @@ class LogupSerializer(ModelSerializer):
    def validate(self, data):
       shop = ShopModel.objects.filter(shop=data['shop'], owner=data['owner'])
       if shop.exists():
-         raise ValidationError('Este propietario ya ha registrado esta tienda.')
+         raise ValidationError({'shop': 'Este propietario ya ha registrado esta tienda.'})
       return data
