@@ -8,7 +8,7 @@ class ShopModel(models.Model):
    token = models.CharField(max_length=40, primary_key=True)
 
    owner = models.CharField(max_length=128)
-   shop = models.CharField(max_length=25)
+   shop = models.CharField(max_length=25, unique=True, error_messages={'unique': 'Otra tienda usa este nombre.'})
    country = models.CharField(max_length=90)
    city = models.CharField(max_length=100)
    address = models.CharField(max_length=95, blank=True, null=True)
@@ -18,6 +18,8 @@ class ShopModel(models.Model):
 
    def save(self, *args, **kwargs):
       self.token = binascii.hexlify(os.urandom(20)).decode()
+      self.owner = self.owner.strip()
+      self.shop = self.shop.lower().strip()
       return super().save(*args, **kwargs)
 
    def __str__(self):
