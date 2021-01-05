@@ -7,19 +7,27 @@ class ShopModel(models.Model):
 
    token = models.CharField(max_length=40, primary_key=True)
 
-   owner = models.CharField(max_length=128)
-   shop = models.CharField(max_length=25, unique=True, error_messages={'unique': 'Otra tienda usa este nombre.'})
+   name = models.CharField(max_length=65)
+   
+   username = models.CharField(
+      max_length=25,
+      unique=True,
+      error_messages={'unique': 'Este nombre de usuario no está disponible.'})
+   
    country = models.CharField(max_length=90)
    city = models.CharField(max_length=100)
-   address = models.CharField(max_length=95, blank=True, null=True)
-   foundation = models.CharField(max_length=10, blank=True, null=True)
-   email = models.EmailField(max_length=125, unique=True, error_messages={'unique': 'Otra tienda usa este email.'})
+ 
+   email = models.EmailField(
+      max_length=125,
+      unique=True,
+      error_messages={'unique': 'Otra tienda usa este email.'})
+
    password = models.CharField(max_length=75)
 
    def save(self, *args, **kwargs):
       self.token = binascii.hexlify(os.urandom(20)).decode()
-      self.owner = self.owner.strip()
-      self.shop = self.shop.lower().strip()
+      self.name = self.name.capitalize().strip()
+      self.username = self.username.lower().strip()
       return super().save(*args, **kwargs)
 
    def __str__(self):
