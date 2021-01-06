@@ -16,10 +16,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('token', models.CharField(max_length=40, primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=65)),
-                ('username', models.CharField(error_messages={'unique': 'Este nombre de usuario no está disponible.'}, max_length=25, unique=True)),
+                ('username', models.CharField(error_messages={'unique': 'Este nombre de usuario ya fue tomado.'}, max_length=25, unique=True)),
                 ('country', models.CharField(max_length=90)),
                 ('city', models.CharField(max_length=100)),
-                ('email', models.EmailField(error_messages={'unique': 'Otra tienda usa este email.'}, max_length=125, unique=True)),
+                ('email', models.EmailField(error_messages={'unique': 'Otro usuario usa este correo.'}, max_length=125, unique=True)),
                 ('password', models.CharField(max_length=75)),
             ],
         ),

@@ -28,15 +28,15 @@ class LogupSerializer(ModelSerializer):
       errormsg = 'El formato es incorrecto.'
       for x in data:
          if x in ['name', 'username']:
-            valid = bool(match(to_valid[x], data[x]))
+            valid = match(to_valid[x], data[x])
             if not valid:
                errors[x] = errormsg
       return errors
    
    def validate(self, data):
       to_valid = {
-         'name': r"(?!.*\s{2})^[a-zA-ZÀ-úñÑ\s]+$",
-         'username': r"^[a-z0-9]*$"
+         'name': r'(?!.*\s{2})^[a-zA-ZÀ-úñÑ\s]+$',
+         'username': r'^[a-z0-9]*$'
       }
       errors = self.regex_validator(data, to_valid)
       if errors:
