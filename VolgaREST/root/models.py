@@ -3,7 +3,7 @@ import os, binascii
 
 # Create your models here.
 
-class ShopModel(models.Model):
+class UserModel(models.Model):
 
    token = models.CharField(max_length=40, primary_key=True)
 
@@ -27,7 +27,7 @@ class ShopModel(models.Model):
    def save(self, *args, **kwargs):
       self.token = binascii.hexlify(os.urandom(20)).decode()
       self.name = self.name.capitalize().strip()
-      self.username = self.username.lower().strip()
+      self.username = self.username.lower().replace(' ', '')
       return super().save(*args, **kwargs)
 
    def __str__(self):

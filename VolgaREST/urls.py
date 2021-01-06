@@ -5,7 +5,7 @@ from VolgaREST.api import LogupViewSet
 
 volgaRouter = DefaultRouter()
 
-volgaRouter.register('api/shops/logup', LogupViewSet)
+volgaRouter.register('api/v1/users/logup', LogupViewSet)
 
 urlpatterns = volgaRouter.urls
 
