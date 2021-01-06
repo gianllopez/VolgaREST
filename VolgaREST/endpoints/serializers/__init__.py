@@ -1,0 +1,1 @@
+from .logup import LogupSerializer

@@ -1,1 +1,0 @@
-from .endpoints.logup.viewset import LogupViewSet

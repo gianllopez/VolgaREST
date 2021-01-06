@@ -1,7 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
-from .serializer import LogupSerializer, UserModel
+from ..serializers import LogupSerializer
+from VolgaREST.root.models import UserModel
 
 class LogupViewSet(ModelViewSet):
    

@@ -1,8 +1,6 @@
 from django.db import models
 import os, binascii
 
-# Create your models here.
-
 class UserModel(models.Model):
 
    token = models.CharField(max_length=40, primary_key=True)
