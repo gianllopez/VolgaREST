@@ -2,16 +2,19 @@ from selenium.webdriver.support.expected_conditions import presence_of_element_l
 from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.support.wait import WebDriverWait as WaitFor
 from selenium.webdriver import Chrome, ChromeOptions
+from django.core.mail import EmailMultiAlternatives
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from time import sleep as waitDOM
-from .constants import *
+from django.conf import settings
+from constants import *
+from django.template.loader import get_template
 
 class ContactAuthentication:
    
    def __init__(self):
       options = ChromeOptions()
-      exe = 'C:/Users/JOSE-LOPEZ/Documents/LUCAS (NO BORRAR)/VolgaREST/VolgaREST/endpoints/utils/chromedriver.exe'
+      exe = 'C:/Users/Asus/Documents/LUCAS (NO BORRAR)/VolgaREST/VolgaREST/endpoints/utils/chromedriver.exe'
       for x in ARGUMENTS:
          arg = f'--{x}' if ARGUMENTS.index(x) <= 3 else x
          options.add_argument(arg)
@@ -62,5 +65,21 @@ class ContactAuthentication:
    def twitter(self, to, code):
       self.send_code(contact_data=TWITTER, user=to, authcode=code)
       
-   def email(self):
-      pass
+   def email(self, to, code):
+
+      settings.configure()
+
+      instance = EmailMultiAlternatives(
+         subject='Volga - Autenticación',
+         body='Código de autenticación de correo',
+         from_email=settings.EMAIL_HOST_USER,
+         to=[to]
+      )
+      # template = get_template('./email-template.html')
+      # content = template.render({'code': code})
+
+      # instance.attach_alternative(content, 'text/html')
+      instance.send()
+
+x = ContactAuthentication()
+x.email('gianlucasla@hotmail.com', 123123)
