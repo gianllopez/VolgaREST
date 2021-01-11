@@ -5,16 +5,17 @@ from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from time import sleep as waitDOM
-from constants import *
+from .constants import *
 
 class ContactAuthentication:
    
    def __init__(self):
       options = ChromeOptions()
+      exe = 'C:/Users/JOSE-LOPEZ/Documents/LUCAS (NO BORRAR)/VolgaREST/VolgaREST/endpoints/utils/chromedriver.exe'
       for x in ARGUMENTS:
          arg = f'--{x}' if ARGUMENTS.index(x) <= 3 else x
          options.add_argument(arg)
-      self.driver = Chrome(executable_path=executable, options=options)
+      self.driver = Chrome(executable_path=exe, options=options)
    def destructure(self, data):
       return [x[1] for x in sorted(data.items())]
    
