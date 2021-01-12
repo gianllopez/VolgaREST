@@ -67,5 +67,4 @@ TWITTER = {
 }
 
 def CODE_MESSAGE(code):
-   return 'Gracias por registrate con Volga, este es tu código de autenticación para esta red de contacto: {code}'
-
+   return 'Gracias por registrate con Volga, este es tu código de autenticación para esta red de contacto: ' + str(code)
