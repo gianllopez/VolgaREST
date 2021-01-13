@@ -7,13 +7,13 @@ from selenium.webdriver.common.by import By
 from django.core.mail import message, send_mail
 from time import sleep as waitDOM
 from django.conf import settings
-from .constants import *
+from constants import *
 
 class ContactAuthentication:
    
    def __init__(self):
       options = ChromeOptions()
-      exe = 'C:/Users/Asus/Documents/LUCAS (NO BORRAR)/VolgaREST/VolgaREST/endpoints/utils/chromedriver.exe'
+      exe = 'C:/Users/JOSE-LOPEZ/Documents/LUCAS (NO BORRAR)/VolgaREST/VolgaREST/endpoints/utils/chromedriver.exe'
       for x in ARGUMENTS:
          arg = f'--{x}' if ARGUMENTS.index(x) <= 3 else x
          options.add_argument(arg)
@@ -47,22 +47,23 @@ class ContactAuthentication:
       follow_or_add, msg_entry, msg_redirect = self.destructure(btns)
       try:
          self.querySelector(follow_or_add, timeout=3).click()
+      except TimeoutException:
+         pass
+      try:
          self.querySelector(msg_redirect).click()
-      except (TimeoutException, ElementClickInterceptedException):
+      except ElementClickInterceptedException:
          pass
       self.querySelector(msg_entry).send_keys(CODE_MESSAGE(authcode), Keys.ENTER)
+      return True
 
    def instagram(self, to, code):
-      self.send_code(contact_data=INSTAGRAM, user=to, authcode=code)
+      return self.send_code(contact_data=INSTAGRAM, user=to, authcode=code)
    
    def facebook(self, to, code):
-      self.send_code(contact_data=FACEBOOK, user=to, authcode=code)
-   
-   def whatsapp(self):
-      pass
+      return self.send_code(contact_data=FACEBOOK, user=to, authcode=code)
 
    def twitter(self, to, code):
-      self.send_code(contact_data=TWITTER, user=to, authcode=code)
+      return self.send_code(contact_data=TWITTER, user=to, authcode=code)
       
    def email(self, to, code):
       config = {
@@ -71,4 +72,4 @@ class ContactAuthentication:
          'recipient_list': [to],
          'message': CODE_MESSAGE(code)
       }
-      send_mail(**config)
+      x = send_mail(**config)

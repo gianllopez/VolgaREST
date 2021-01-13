@@ -1,5 +1,5 @@
 ARGUMENTS = [
-   'headless',
+   headless',
    'disable-dev-shm-usage',
    'disable-notifications',
    'no-sandbox',
