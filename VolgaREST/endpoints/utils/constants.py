@@ -1,5 +1,5 @@
 ARGUMENTS = [
-   headless',
+   'headless',
    'disable-dev-shm-usage',
    'disable-notifications',
    'no-sandbox',
@@ -64,6 +64,12 @@ TWITTER = {
          'message-input': '.public-DraftStyleDefault-block'
       }
    }
+}
+
+CONTACTS_CONSTANT = {
+   'instagram': INSTAGRAM,
+   'facebook': FACEBOOK,
+   'twitter': TWITTER
 }
 
 def CODE_MESSAGE(code):

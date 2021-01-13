@@ -9,9 +9,11 @@ class ContactSerializer(ModelSerializer):
       fields = '__all__'
    
    def validate(self, data):
-      auth = ContactAuthentication()
+      # import pdb; pdb.set_trace()
       contacts = {}
       for x in data:
-         if x != 'token':
+         if x not in ['token', 'whatsapp']:
             contacts[x] = data[x]
-      import pdb; pdb.set_trace()
+      auth = ContactAuthentication(credentials=contacts)
+      auth.execute()
+      return data

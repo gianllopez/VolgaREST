@@ -1,23 +1,30 @@
 from selenium.webdriver.support.expected_conditions import presence_of_element_located as appears
 from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver.support.wait import WebDriverWait as WaitFor
+from rest_framework.exceptions import ValidationError
 from selenium.webdriver import Chrome, ChromeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from django.core.mail import message, send_mail
 from time import sleep as waitDOM
 from django.conf import settings
-from constants import *
+from random import choices
+from string import digits
+from .constants import *
 
 class ContactAuthentication:
    
-   def __init__(self):
+   def __init__(self, credentials):
       options = ChromeOptions()
       exe = 'C:/Users/JOSE-LOPEZ/Documents/LUCAS (NO BORRAR)/VolgaREST/VolgaREST/endpoints/utils/chromedriver.exe'
       for x in ARGUMENTS:
          arg = f'--{x}' if ARGUMENTS.index(x) <= 3 else x
          options.add_argument(arg)
       self.driver = Chrome(executable_path=exe, options=options)
+      self.credentials = credentials
+      self.errors = {}
+      self.codes = {}
+
    def destructure(self, data):
       return [x[1] for x in sorted(data.items())]
    
@@ -33,8 +40,8 @@ class ContactAuthentication:
          self.querySelector(x).send_keys(credentials[x])
       self.querySelector(submit_btn).click()
    
-   def send_code(self, contact_data, user, authcode):
-      login_data, message_data, root_url = self.destructure(contact_data)
+   def send_code(self, contact_config, user, authcode):
+      login_data, message_data, root_url = self.destructure(contact_config)
       message_data['to'] = user
       self.login(root=root_url, data=login_data)
       while True:
@@ -50,26 +57,30 @@ class ContactAuthentication:
       except TimeoutException:
          pass
       try:
-         self.querySelector(msg_redirect).click()
-      except ElementClickInterceptedException:
-         pass
-      self.querySelector(msg_entry).send_keys(CODE_MESSAGE(authcode), Keys.ENTER)
-      return True
+         try:
+            self.querySelector(msg_redirect).click()
+         except ElementClickInterceptedException:
+            pass
+         self.querySelector(msg_entry).send_keys(CODE_MESSAGE(authcode), Keys.ENTER)
+      except TimeoutException:
+         account = ''
+         for key, value in self.credentials.items():
+            if value == user:
+               account = key
+         self.errors[account] = 'Esta cuenta no acepta mensajes directos, por ende no se puede autenticar.'
 
-   def instagram(self, to, code):
-      return self.send_code(contact_data=INSTAGRAM, user=to, authcode=code)
-   
-   def facebook(self, to, code):
-      return self.send_code(contact_data=FACEBOOK, user=to, authcode=code)
-
-   def twitter(self, to, code):
-      return self.send_code(contact_data=TWITTER, user=to, authcode=code)
-      
-   def email(self, to, code):
-      config = {
-         'subject': 'Volga - Autenticación',
-         'from_email': settings.EMAIL_HOST_USER,
-         'recipient_list': [to],
-         'message': CODE_MESSAGE(code)
-      }
-      x = send_mail(**config)
+   def execute(self):
+      for account, user in self.credentials.items():
+         code = ''.join(choices(digits, k=6))
+         if account != 'email':
+            config = CONTACTS_CONSTANT[account]
+            self.send_code(contact_config=config, user=user, authcode=code)
+            self.codes[account] = code
+         else:
+            config = {
+               'subject': 'Volga - Autenticación',
+               'from_email': settings.EMAIL_HOST_USER,
+               'recipient_list': [user],
+               'message': CODE_MESSAGE(code)
+            }
+            send_mail(**config)
