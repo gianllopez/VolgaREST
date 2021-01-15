@@ -1,2 +1,2 @@
 from .logup import LogupViewSet
-from .contact import ContactViewSet
+from .contact_networks import ContactNetworksViewSet

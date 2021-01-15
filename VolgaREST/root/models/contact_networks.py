@@ -1,7 +1,7 @@
 from django.db import models
 from .user import UserModel
 
-class ContactModel(models.Model):
+class ContactNetworksModel(models.Model):
 
    token = models.OneToOneField(
       to=UserModel,

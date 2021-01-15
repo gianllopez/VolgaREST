@@ -1,2 +1,2 @@
 from .user import UserModel
-from .contact import ContactModel
+from .contact_networks import ContactNetworksModel

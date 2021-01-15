@@ -1,2 +1,2 @@
 from .logup import LogupSerializer
-from .contact import ContactSerializer
+from .contact_networks import ContactNetworksSerializer
