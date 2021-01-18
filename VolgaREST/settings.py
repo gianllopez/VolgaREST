@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'VolgaREST.root',
     # 3rd frameworks apps:
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders'
 ]
 
