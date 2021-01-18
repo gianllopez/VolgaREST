@@ -2,7 +2,7 @@ from django.db import models
 from .user import UserModel
 
 class UserTagsModel(models.Model):
-   user = models.OneToOneField(
+   username = models.OneToOneField(
       to=UserModel,
       on_delete=models.CASCADE,
       primary_key=True,

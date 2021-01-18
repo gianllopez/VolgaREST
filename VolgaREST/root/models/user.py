@@ -1,29 +1,26 @@
-from django.db import models
-import os, binascii
+from django.db.models import CharField, EmailField
+from django.contrib.auth.models import AbstractBaseUser
 
-class UserModel(models.Model):
+class UserModel(AbstractBaseUser):
 
-   token = models.CharField(max_length=40, primary_key=True)
-
-   name = models.CharField(max_length=65)
+   name = CharField(max_length=65)
    
-   username = models.CharField(
+   username = CharField(
       max_length=25,
-      unique=True,
+      primary_key=True,
       error_messages={'unique': 'Este nombre de usuario ya fue tomado.'})
    
-   country = models.CharField(max_length=90)
-   city = models.CharField(max_length=100)
+   country = CharField(max_length=90)
+   city = CharField(max_length=100)
  
-   email = models.EmailField(
+   email = EmailField(
       max_length=125,
       unique=True,
       error_messages={'unique': 'Otro usuario usa este correo.'})
 
-   password = models.CharField(max_length=75)
+   USERNAME_FIELD = 'username'
 
    def save(self, *args, **kwargs):
-      self.token = binascii.hexlify(os.urandom(20)).decode()
       self.name = self.name.title().strip()
       self.username = self.username.lower().replace(' ', '')
       return super().save(*args, **kwargs)

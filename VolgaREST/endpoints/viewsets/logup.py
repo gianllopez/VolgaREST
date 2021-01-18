@@ -13,11 +13,6 @@ class LogupViewSet(ModelViewSet):
       serializer = self.serializer_class(data=request.data)
       serializer.is_valid(raise_exception=True)
       user = serializer.save()
-      data = {
-         'data': {
-            'name': user.name,
-            'username': user.username
-         },
-         'token': user.token
-      }
-      return Response(data, status=HTTP_201_CREATED)
+      return Response(
+         data={'username': user.username},
+         status=HTTP_201_CREATED)

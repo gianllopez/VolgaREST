@@ -90,6 +90,8 @@ STATIC_URL = '/static/'
 
 # My config:
 
+AUTH_USER_MODEL = 'root.UserModel'
+
 CORS_ALLOW_ALL_ORIGINS = True
 
 EMAIL_HOST = 'smtp.gmail.com'

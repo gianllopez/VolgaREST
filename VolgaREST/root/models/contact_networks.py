@@ -3,7 +3,7 @@ from .user import UserModel
 
 class ContactNetworksModel(models.Model):
 
-   user = models.OneToOneField(
+   username = models.OneToOneField(
       to=UserModel,
       primary_key=True,
       on_delete=models.CASCADE,
