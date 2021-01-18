@@ -100,3 +100,12 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'lopezarizagianlucas@gmail.com' # this must be changed by Volga email...
 EMAIL_HOST_PASSWORD = 'megazepol04' # bring this from Heroku env variables & must be Volga password...
 EMAIL_USE_TLS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+}

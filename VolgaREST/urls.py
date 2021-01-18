@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from VolgaREST.endpoints import LogupViewSet, ContactNetworksViewSet, UserTagsViewSet
 
@@ -13,4 +14,5 @@ urlpatterns = volgaRouter.urls
 
 urlpatterns += [
     path('admin/', admin.site.urls),
+    path('api-auth-token/', admin.site.urls),
 ]
