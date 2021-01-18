@@ -3,7 +3,7 @@ from .user import UserModel
 
 class ContactNetworksModel(models.Model):
 
-   username = models.OneToOneField(
+   user = models.OneToOneField(
       to=UserModel,
       primary_key=True,
       on_delete=models.CASCADE,
@@ -15,13 +15,13 @@ class ContactNetworksModel(models.Model):
    facebook = models.CharField(max_length=50, error_messages=unique_error)
    whatsapp = models.CharField(max_length=15, error_messages=unique_error)
    twitter = models.CharField(max_length=15, error_messages=unique_error)
-   email = models.CharField(max_length=100, error_messages=unique_error)
+   email = models.EmailField(max_length=100, error_messages=unique_error)
 
    fields = [instagram, facebook, whatsapp, twitter, email]
-   for x in range(len(fields)):
+   for x in range(5):
       fields[x]._unique = True
       fields[x].blank = True
       fields[x].null = True
    
    def __str__(self):
-      return self.user.username
+      return self.user

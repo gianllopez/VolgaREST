@@ -19,6 +19,7 @@ class UserModel(AbstractBaseUser):
       error_messages={'unique': 'Otro usuario usa este correo.'})
 
    USERNAME_FIELD = 'username'
+   last_login = None
 
    def save(self, *args, **kwargs):
       self.name = self.name.title().strip()

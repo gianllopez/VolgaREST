@@ -18,11 +18,5 @@ class LogupViewSet(GenericViewSet, CreateModelMixin):
       user = serializer.save()
       authtoken = Token.objects.create(user=user)
       return Response(
-         data={
-            'credentials': {
-               'username': user.username,
-               'password': user.password
-            },
-            'token': authtoken.key
-         },
+         data={'token': authtoken.key},
          status=HTTP_201_CREATED)

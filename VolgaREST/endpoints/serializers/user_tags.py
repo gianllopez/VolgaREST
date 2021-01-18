@@ -4,4 +4,4 @@ from VolgaREST.root.models import UserTagsModel
 class UserTagsSerializer(ModelSerializer):
    class Meta:
       model = UserTagsModel
-      fields = ['tags']
+      fields = '__all__'
