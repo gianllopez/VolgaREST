@@ -14,5 +14,5 @@ urlpatterns = volgaRouter.urls
 
 urlpatterns += [
     path('admin/', admin.site.urls),
-    path('api-auth-token/', admin.site.urls),
+    path('api-auth-token/', obtain_auth_token)
 ]
