@@ -5,6 +5,8 @@ class UserModel(AbstractBaseUser):
 
    name = CharField(max_length=65)
    
+   picture = CharField(max_length=256, blank=True, null=True)
+
    username = CharField(
       max_length=25,
       primary_key=True,

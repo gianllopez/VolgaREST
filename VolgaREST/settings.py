@@ -1,4 +1,5 @@
 from pathlib import Path
+import cloudinary
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +21,8 @@ INSTALLED_APPS = [
     # 3rd frameworks apps:
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders'
+    'corsheaders',
+    'cloudinary'
 ]
 
 MIDDLEWARE = [
@@ -109,3 +111,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
 }
+
+cloudinary.config(
+    cloud_name='volga',
+    api_key='831489528241167',
+    api_secret='NbQSoezo18lW4JuN2r-16z1C5u8'
+)
