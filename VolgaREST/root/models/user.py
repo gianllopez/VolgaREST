@@ -14,6 +14,8 @@ class UserModel(AbstractBaseUser):
    
    country = CharField(max_length=90)
    city = CharField(max_length=100)
+
+   gender = CharField(max_length=20)
  
    email = EmailField(
       max_length=125,

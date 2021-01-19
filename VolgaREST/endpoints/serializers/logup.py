@@ -12,6 +12,7 @@ class LogupSerializer(ModelSerializer):
          'username',
          'country',
          'city',
+         'gender',
          'email',
          'password'
       ]
@@ -41,4 +42,6 @@ class LogupSerializer(ModelSerializer):
       errors = self.regex_validator(data, to_valid)
       if errors:
          raise ValidationError(errors)
+      if data['gender'] not in ['Masculino', 'Femenino', 'No definido', 'Prefiero no decirlo']:
+         raise ValidationError({'gender': 'Género inválido.'})
       return data

@@ -8,11 +8,15 @@ class UserProfilePictureSerializer(Serializer):
    picture = ImageField(allow_empty_file=True)
 
    def create(self, validated_data):
-      username, picture = validated_data.values()
-      picture = upload(
-         file=picture.file, folder='profile-pictures/',
-         public_id=username, overwrite=True)
+      username, loadedpic = validated_data.values()
       user = UserModel.objects.get(username=username)
-      user.picture = picture['secure_url']
-      user.save()
+      if loadedpic:
+         picture = upload(
+            file=loadedpic.file, folder='profile-pictures/',
+            public_id=username, overwrite=True)
+         user.picture = picture['secure_url']
+         user.save()
+      else:
+         baseurl = 'https://res.cloudinary.com/volga/image/upload/v1611089503/blankpp-'
+         loadedpic = baseurl + 
       return validated_data
