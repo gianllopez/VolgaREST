@@ -21,7 +21,7 @@ class UserProfilePictureViewSet(GenericViewSet, CreateModelMixin):
          return baseurl + genderspp[gender]
          
    def create(self, request):
-      username, loadedpic = request.data.values()
+      username, loadedpic = request.data['username'], request.data['picture']
       user = UserModel.objects.get(username=username)
       if loadedpic:
          picture = upload (
