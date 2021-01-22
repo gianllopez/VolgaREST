@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from VolgaREST.root.models import ContactNetworksModel, UserModel
+from VolgaREST.root.models import ContactNetworksModel
 
 class ContactNetworksSerializer(ModelSerializer):
    class Meta:
