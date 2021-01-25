@@ -4,7 +4,7 @@ from rest_framework.routers import DefaultRouter
 from VolgaREST.endpoints import (
     LogupViewSet, ContactNetworksViewSet,
     UserTagsViewSet, UserProfilePictureViewSet,
-    ClientOpinionsViewSet
+    ClientOpinionsViewSet, LoginViewSet
 )
 
 volgaRouter = DefaultRouter()
@@ -15,6 +15,7 @@ volgaRouter.register(apibase + '/contact', ContactNetworksViewSet)
 volgaRouter.register(apibase + '/tags', UserTagsViewSet)
 volgaRouter.register(apibase + '/profile-picture', UserProfilePictureViewSet)
 volgaRouter.register(apibase + '/opinions', ClientOpinionsViewSet)
+volgaRouter.register(apibase + '/login', LoginViewSet)
 
 urlpatterns = volgaRouter.urls
 

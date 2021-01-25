@@ -1,5 +1,5 @@
 from django.db.models import CharField, EmailField
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 class UserModel(AbstractBaseUser):
 
@@ -16,14 +16,16 @@ class UserModel(AbstractBaseUser):
    city = CharField(max_length=100)
 
    gender = CharField(max_length=20)
- 
+
    email = EmailField(
       max_length=125,
       unique=True,
       error_messages={'unique': 'Otro usuario usa este correo.'})
 
    USERNAME_FIELD = 'username'
+   objects = BaseUserManager()
    last_login = None
+
 
    def save(self, *args, **kwargs):
       self.name = self.name.title().strip()
