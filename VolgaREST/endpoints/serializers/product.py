@@ -6,11 +6,9 @@ class NewProductSerializer(ModelSerializer):
       model = ProductModel
       fields = [
          'user',
-         'image_1',
-         'image_2',
-         'image_3 ',
-         'image_4',
-         'product ',
-         'price ',
-         'description '
+         'image_1', 'image_2', 'image_3', 'image_4',
+         'product',
+         'price',
+         'description'
       ]
+      

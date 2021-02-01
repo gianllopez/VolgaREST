@@ -17,11 +17,11 @@ class ProductModel(models.Model):
       images[x].null = True and images[x] != image_1
       images[x].max_length = 255
 
-   product = models.CharField(max_length=75) # Review for the UI
+   product = models.CharField(max_length=25) # Good max length
 
-   price = models.CharField(max_length=15)
+   price = models.CharField(max_length=15) # Good max length
 
-   description = models.TextField(max_length=225) # Review for the UI
+   description = models.TextField(max_length=145) # Good max length
 
    def __str__(self):
       return self.user
