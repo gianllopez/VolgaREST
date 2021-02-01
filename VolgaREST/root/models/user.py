@@ -26,11 +26,10 @@ class UserModel(AbstractBaseUser):
    objects = BaseUserManager()
    last_login = None
 
-
    def save(self, *args, **kwargs):
       self.name = self.name.title().strip()
       self.username = self.username.lower().replace(' ', '')
       return super().save(*args, **kwargs)
 
    def __str__(self):
-      return f'{self.username}'
+      return self.username

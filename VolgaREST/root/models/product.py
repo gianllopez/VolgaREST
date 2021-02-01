@@ -21,10 +21,12 @@ class ProductModel(models.Model):
 
    price = models.CharField(max_length=15) # Good max length
 
-   description = models.TextField(max_length=145) # Good max length
+   description = models.TextField(max_length=145, null=True, blank=True) # Good max length
+
+   key = models.CharField(max_length=6, unique=True)
 
    def __str__(self):
-      return self.user
+      return self.user.username
 
 
 
