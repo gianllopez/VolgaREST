@@ -20,8 +20,8 @@ class NewProductViewSet(ModelViewSet):
             name = f'{product}({index})-from-{user}'
             if reqdata[data]:
                reqdata[data] = upload (
-                  file=reqdata[data], folder='products/',
-                  public_id=name, overwrite=True).get('secure_url')
+                     file=reqdata[data], folder='products/',
+                     public_id=name, overwrite=True).get('secure_url')
       return reqdata
 
    def create(self, request):

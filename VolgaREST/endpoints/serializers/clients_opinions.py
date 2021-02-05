@@ -4,4 +4,9 @@ from VolgaREST.root.models import ClientsOpinionsModel
 class ClientsOpinionsSerializer(ModelSerializer):
    class Meta:
       model = ClientsOpinionsModel
-      fields = '__all__'
+      fields = [
+         'from_user',
+         'to_user',
+         'rating',
+         'comment'
+      ]
