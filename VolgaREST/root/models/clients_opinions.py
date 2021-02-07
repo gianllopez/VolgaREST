@@ -13,8 +13,10 @@ class ClientsOpinionsModel(models.Model):
       on_delete=models.CASCADE,
       related_name='to_user')
 
-   rating = models.IntegerField(default=10)
+   rating = models.FloatField(default=10)
    comment = models.TextField(max_length=125)
+
+   date = models.DateField(auto_now_add=True)
 
    def __str__(self):
       return self.from_user.username

@@ -23,10 +23,10 @@ class ProductModel(models.Model):
 
    description = models.TextField(max_length=145, null=True, blank=True) # Good max length
 
-   key = models.CharField(max_length=6, unique=True)
+   key = models.CharField(max_length=6, primary_key=True)
 
    def __str__(self):
-      return self.user.username
+      return f'{self.product} from {self.user.username}'
 
 
 

@@ -13,7 +13,7 @@ class UserProfilePictureViewSet(GenericViewSet, CreateModelMixin):
    def get_blankpp(self, gender):
          genderspp = {
             'Masculino': 'blankpp-men.png',
-            'Masculino': 'blankpp-women.png',
+            'Femenino': 'blankpp-women.png',
             'No definido': 'blankpp-undefined.png',
             'Prefiero no especificarlo': 'blankpp-undefined.png'
          }

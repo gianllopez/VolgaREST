@@ -24,4 +24,4 @@ class ContactNetworksModel(models.Model):
       fields[x].null = True
    
    def __str__(self):
-      return self.user
+      return self.user.username
