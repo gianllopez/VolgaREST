@@ -8,3 +8,4 @@ from .product import NewProductViewSet
 from .get_data import GetDataViewSet
 from .validation import ValidationViewSet
 from .followers import FollowersViewSet
+from .favorites_products import FavoritesProductsViewSet

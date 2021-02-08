@@ -4,3 +4,4 @@ from .user_tags import UserTagsModel
 from .clients_opinions import ClientsOpinionsModel
 from .product import ProductModel
 from .followers import FollowersModel
+from .favorites_products import FavoritesProducts
