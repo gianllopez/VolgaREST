@@ -19,5 +19,4 @@ class ContactNetworksSerializer(ModelSerializer):
       for data in validated_data:
          contact[data] = self.get_complete_url(data, validated_data[data])
       contact['user'] = validated_data['user']
-      import pdb; pdb.set_trace()
       return ContactNetworksModel.objects.create(**contact)

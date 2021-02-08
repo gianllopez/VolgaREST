@@ -8,7 +8,8 @@ from django.forms.models import model_to_dict
 from VolgaREST.root.models import (
    UserModel, ProductModel,
    ProductModel, ContactNetworksModel,
-   ClientsOpinionsModel, FollowersModel)
+   ClientsOpinionsModel, FollowersModel,
+   FavoritesProducts)
 
 class GetDataViewSet(GenericViewSet):
 
@@ -121,7 +122,7 @@ class GetDataViewSet(GenericViewSet):
          response = {'data': {'results': []}, 'status': HTTP_200_OK}
          for product in result:
             product_dict = model_to_dict(product)
-            product_response = {'user': {}}
+            product_response = {'user': {}}            
             for data in product_dict:
                user_info = product_response['user']
                user_info['picture'] = product.user.picture or self.blankpicture
@@ -129,6 +130,7 @@ class GetDataViewSet(GenericViewSet):
                user_info['name'] = product.user.name               
                if data in needed_data:
                   product_response[data] = product_dict[data]
+            product_response['isfav'] = FavoritesProducts.objects.filter(product=product).exists()
             response['data']['results'].append(product_response)
       else:
          response = {'status': HTTP_204_NO_CONTENT}
