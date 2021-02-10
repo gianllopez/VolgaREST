@@ -39,6 +39,7 @@ class NewProductViewSet(ModelViewSet):
       data['user'] = user
       data['price'] = '{} {}'.format(data['price'], data['pricetype'])
       data['key'] = ''.join(choices(ascii_uppercase + digits, k=6))
+      data['tags'] = data['tags']
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)
       serializer.save()
