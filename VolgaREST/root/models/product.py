@@ -23,6 +23,8 @@ class ProductModel(models.Model):
 
    description = models.TextField(max_length=145, null=True, blank=True) # Good max length
 
+   tags = models.TextField(max_length=345, null=True, blank=True)
+
    key = models.CharField(max_length=6, primary_key=True)
 
    def __str__(self):
