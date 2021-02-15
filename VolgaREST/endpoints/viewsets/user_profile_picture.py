@@ -10,25 +10,13 @@ class UserProfilePictureViewSet(GenericViewSet, CreateModelMixin):
    serializer_class = UserProfilePictureSerializer
    queryset = UserModel.objects.all()
 
-   def get_blankpp(self, gender):
-         genderspp = {
-            'Masculino': 'blankpp-men.png',
-            'Femenino': 'blankpp-women.png',
-            'No definido': 'blankpp-undefined.png',
-            'Prefiero no especificarlo': 'blankpp-undefined.png'
-         }
-         baseurl = 'https://res.cloudinary.com/volga/image/upload/v1611089503/'
-         return baseurl + genderspp[gender]
-         
    def create(self, request):
       username, loadedpic = request.data['username'], request.data['picture']
       user = UserModel.objects.get(username=username)
       if loadedpic:
          picture = upload (
             file=loadedpic.file, folder='profile-pictures/',
-            public_id=username, overwrite=True)
-         user.picture = picture['secure_url']
-      else:
-         user.picture = self.get_blankpp(gender=user.gender)
+            public_id=username, overwrite=True)['secure_url']
+         user.picture = picture
       user.save()
       return Response(data={'profile-picture': user.picture}, status=HTTP_201_CREATED)

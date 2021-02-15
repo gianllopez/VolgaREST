@@ -17,13 +17,13 @@ class ProductModel(models.Model):
       images[x].null = True and images[x] != image_1
       images[x].max_length = 255
 
-   product = models.CharField(max_length=25) # Good max length
+   product = models.CharField(max_length=50) # Good max length
 
    price = models.CharField(max_length=15) # Good max length
 
    description = models.TextField(max_length=145, null=True, blank=True) # Good max length
 
-   tags = models.TextField(max_length=345, null=True, blank=True)
+   tags = models.TextField(max_length=500, null=True, blank=True)
 
    key = models.CharField(max_length=6, primary_key=True)
 
