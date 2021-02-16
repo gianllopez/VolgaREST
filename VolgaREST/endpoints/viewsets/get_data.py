@@ -40,6 +40,7 @@ class GetDataViewSet(GenericViewSet):
          for data in product:
             if 'image_' not in data and data != 'id':
                response[data] = product[data]
+         response['tags'] = response['tags'].split(', ')
          if not response['description']:
             response['description'] = 'Sin descripción'
          response['isfav'] = FavoritesProducts.objects.filter(product=product_result).exists()
@@ -141,7 +142,7 @@ class GetDataViewSet(GenericViewSet):
             else:
                response = {'status': HTTP_204_NO_CONTENT}
          else:
-            users = UserModel.objects.filter(username=query)
+            users = UserModel.objects.filter(username__icontains=query)
             response = {'data': {'results': []}, 'status': HTTP_200_OK}
             for user in users:
                user_dict = model_to_dict(user)
@@ -152,6 +153,8 @@ class GetDataViewSet(GenericViewSet):
                   city = user_dict['city']
                   country = user_dict['country']
                   user_data['location'] = f'{city}, {country}'.title()
+                  # import pdb; pdb.set_trace()
+                  user_data['picture'] = user_dict['picture'] or self.blankpicture
                response['data']['results'].append(user_data)
       else:
          response = {'status': HTTP_204_NO_CONTENT}
