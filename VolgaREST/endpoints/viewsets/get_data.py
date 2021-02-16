@@ -1,3 +1,4 @@
+from django.db.models import query
 from rest_framework import response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.exceptions import ValidationError
@@ -8,7 +9,9 @@ from django.forms.models import model_to_dict
 from VolgaREST.root.models import (
    UserModel, ProductModel,
    ProductModel, ContactNetworksModel,
-   ClientsOpinionsModel, FollowersModel)
+   ClientsOpinionsModel, FollowersModel,
+   FavoritesProducts)
+from random import sample
 
 class GetDataViewSet(GenericViewSet):
 
@@ -30,19 +33,25 @@ class GetDataViewSet(GenericViewSet):
       if not result.exists():
          raise ValidationError({'error': 404})
       else:
-         product = model_to_dict(result.first())
+         product_result = result.first()
+         product = model_to_dict(product_result)
          response = {}
          response['images'] = [product[x] for x in product if 'image_' in x]
          for data in product:
             if 'image_' not in data and data != 'id':
                response[data] = product[data]
+         tags = response['tags']
+         if tags:
+            response['tags'] = response['tags'].split(', ')
+         else: 
+            del response['tags']
          if not response['description']:
             response['description'] = 'Sin descripción'
+         response['isfav'] = FavoritesProducts.objects.filter(product=product_result).exists()
          return Response(data=response, status=HTTP_200_OK)
       
    @action(methods=['get'], detail=False)
    def user(self, request):
-      
       username = request.GET['username']
       if username == 'me':
          token = request.headers['Authorization'][6:] 
@@ -53,7 +62,6 @@ class GetDataViewSet(GenericViewSet):
       opinions = ClientsOpinionsModel.objects.filter(to_user=user)
       followers = FollowersModel.objects.filter(user=user)
       products = ProductModel.objects.filter(user=user)
-      
       clients_ratings, opinions_data = [], []
       for opinion in opinions:
          opinion_dict = self.format_opinions(opinion)
@@ -114,22 +122,130 @@ class GetDataViewSet(GenericViewSet):
       
    @action(methods=['post'], detail=False)
    def search(self, request):
-      query = request.data['query']
-      result = ProductModel.objects.filter(product__icontains=query)
-      needed_data = ['image_1', 'product', 'price', 'key']
-      if result.exists():
-         response = {'data': {'results': []}, 'status': HTTP_200_OK}
-         for product in result:
-            product_dict = model_to_dict(product)
-            product_response = {'user': {}}
-            for data in product_dict:
-               user_info = product_response['user']
-               user_info['picture'] = product.user.picture or self.blankpicture
-               user_info['username'] = product.user.username
-               user_info['name'] = product.user.name               
-               if data in needed_data:
-                  product_response[data] = product_dict[data]
-            response['data']['results'].append(product_response)
+      data = request.data
+      query, filter = data['query'], data['filter']
+      if query:
+         if filter == 'products':
+            result = ProductModel.objects.filter(product__icontains=query)
+            needed_data = ['image_1', 'product', 'price', 'key']
+            if result.exists():
+               response = {'data': {'results': []}, 'status': HTTP_200_OK}
+               for product in result:
+                  product_dict = model_to_dict(product)
+                  product_response = {'user': {}}            
+                  for data in product_dict:
+                     user_info = product_response['user']
+                     user_info['picture'] = product.user.picture or self.blankpicture
+                     user_info['username'] = product.user.username
+                     user_info['name'] = product.user.name               
+                     if data in needed_data:
+                        product_response[data] = product_dict[data]
+                  product_response['isfav'] = FavoritesProducts.objects.filter(product=product).exists()
+                  response['data']['results'].append(product_response)
+            else:
+               response = {'status': HTTP_204_NO_CONTENT}
+         else:
+            users = UserModel.objects.filter(username__icontains=query)
+            response = {'data': {'results': []}, 'status': HTTP_200_OK}
+            for user in users:
+               user_dict = model_to_dict(user)
+               user_data = {}
+               for data in user_dict:
+                  if data in ['username', 'name', 'picture']:
+                     user_data[data] = user_dict[data]
+                  city = user_dict['city']
+                  country = user_dict['country']
+                  user_data['location'] = f'{city}, {country}'.title()
+                  # import pdb; pdb.set_trace()
+                  user_data['picture'] = user_dict['picture'] or self.blankpicture
+               response['data']['results'].append(user_data)
       else:
          response = {'status': HTTP_204_NO_CONTENT}
       return Response(**response)
+   
+   @action(methods=['post'], detail=False)
+   def explore(self, request):
+      querytags = request.data['querytags']
+      explore_results = ProductModel.objects.filter(tags__contains=querytags)
+      response = []
+      needed_data = ['image_1', 'product', 'price', 'key']
+      for result in explore_results:
+         product_dict = model_to_dict(result)
+         product_response = {'user': {}}            
+         for data in product_dict:
+            user_info = product_response['user']
+            user_info['picture'] = result.user.picture or self.blankpicture
+            user_info['username'] = result.user.username
+            user_info['name'] = result.user.name               
+            if data in needed_data:
+               product_response[data] = product_dict[data]
+         product_response['isfav'] = FavoritesProducts.objects.filter(product=result).exists()
+         response.append(product_response)
+      return Response(data=response, status=HTTP_200_OK)
+   
+   @action(methods=['get'], detail=False, url_path='favorites-products')
+   def favorites_products(self, request):
+      user = request.__dict__['_user']
+      favs = FavoritesProducts.objects.filter(user=user)
+      needed_data = ['image_1', 'product', 'price', 'key']
+      response = []
+      for fav in favs:
+         product_dict = model_to_dict(fav.product)
+         product_response = {'user': {}}            
+         for data in product_dict:
+            user_info = product_response['user']
+            user_info['picture'] = fav.user.picture or self.blankpicture
+            user_info['username'] = fav.user.username
+            user_info['name'] = fav.user.name               
+            if data in needed_data:
+               product_response[data] = product_dict[data]
+         product_response['isfav'] = FavoritesProducts.objects.filter(product=fav.product).exists()
+         response.append(product_response)
+      return Response(data=response, status=HTTP_200_OK)
+
+   @action(methods=['get'], detail=False)
+   def feed(self, request):
+      user = request.__dict__['_user']
+      following = FollowersModel.objects.filter(follower=user)
+      feed_response = []
+      for following_user in following:
+         user_products = ProductModel.objects.filter(user=following_user.user)
+         if len(user_products) != 0:     
+            needed_data = ['image_1', 'product', 'price', 'key']       
+            for userprod in user_products:
+               product_dict = model_to_dict(userprod)
+               product_response = {'user': {}}            
+               for data in product_dict:
+                  user_info = product_response['user']
+                  user_info['picture'] = userprod.user.picture or self.blankpicture
+                  user_info['username'] = userprod.user.username
+                  user_info['name'] = userprod.user.name               
+                  if data in needed_data:
+                     product_response[data] = product_dict[data]
+               product_response['isfav'] = FavoritesProducts.objects.filter(product=userprod.product).exists()               
+               feed_response.append(product_response)
+      return Response(data=feed_response, status=HTTP_200_OK)
+   
+   @action(methods=['get'], detail=False, url_path='landing-products', authentication_classes=[], permission_classes=[])
+   def landing_products(self, request):
+      products = list(ProductModel.objects.all())
+      random_prods = sample(products, 3)
+      response = []
+      needed_data = ['image_1', 'product', 'price', 'key']
+      for product in random_prods:
+         product_response = {'user': {}}
+         product_dict = model_to_dict(product)
+         for data in product_dict:
+            user_info = product_response['user']
+            user_info['picture'] = product.user.picture or self.blankpicture
+            user_info['username'] = product.user.username
+            user_info['name'] = product.user.name
+            if data in needed_data:
+               product_response[data] = product_dict[data]
+         response.append(product_response)
+      return Response(data=response, status=HTTP_200_OK)
+
+   @action(methods=['get'], detail=False, url_path='profile-picture')
+   def profile_picture(self, request):
+      picture = request.__dict__['_user'].picture
+      return Response(data={'picture': picture or self.blankpicture})

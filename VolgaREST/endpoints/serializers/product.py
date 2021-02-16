@@ -10,6 +10,7 @@ class NewProductSerializer(ModelSerializer):
          'product',
          'price',
          'description',
+         'tags',
          'key'
       ]
       

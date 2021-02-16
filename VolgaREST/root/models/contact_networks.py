@@ -15,10 +15,11 @@ class ContactNetworksModel(models.Model):
    facebook = models.CharField(max_length=50, error_messages=unique_error)
    whatsapp = models.CharField(max_length=15, error_messages=unique_error)
    twitter = models.CharField(max_length=15, error_messages=unique_error)
+   linkedin = models.CharField(max_length=30, error_messages=unique_error)
    email = models.EmailField(max_length=100, error_messages=unique_error)
 
-   fields = [instagram, facebook, whatsapp, twitter, email]
-   for x in range(5):
+   fields = [instagram, facebook, whatsapp, twitter, linkedin, email]
+   for x in range(6):
       fields[x]._unique = True
       fields[x].blank = True
       fields[x].null = True
