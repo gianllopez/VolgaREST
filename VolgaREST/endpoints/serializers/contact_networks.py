@@ -8,7 +8,7 @@ class ContactNetworksSerializer(ModelSerializer):
 
    def get_complete_url(self, network, contact):
       if contact:
-         if network in ['facebook', 'instagram', 'twitter']:
+         if network in ['facebook', 'instagram', 'twitter', 'linkedin']:
             return f'https://www.{network}.com/{contact}'
          else:
             if network != 'user':
@@ -17,7 +17,7 @@ class ContactNetworksSerializer(ModelSerializer):
    def create(self, validated_data):
       contact = {}
       for data in validated_data:
-         contact[data] = self.get_complete_url(data, validated_data[data])
+         if data != 'user':
+            contact[data] = self.get_complete_url(data, validated_data[data])
       contact['user'] = validated_data['user']
-      import pdb; pdb.set_trace()
       return ContactNetworksModel.objects.create(**contact)
