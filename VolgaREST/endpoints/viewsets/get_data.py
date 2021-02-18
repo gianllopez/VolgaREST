@@ -3,7 +3,7 @@ from rest_framework import response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 from rest_framework.decorators import action
 from django.forms.models import model_to_dict
 from VolgaREST.root.models import (
@@ -53,12 +53,7 @@ class GetDataViewSet(GenericViewSet):
    @action(methods=['get'], detail=False)
    def user(self, request):
       username = request.GET['username']
-      if username == 'me':
-         token = request.headers['Authorization'][6:] 
-         user = UserModel.objects.get(auth_token=token)
-      else:
-         user = UserModel.objects.get(username=request.GET['username'])
-      
+      user = UserModel.objects.get(username=username)
       opinions = ClientsOpinionsModel.objects.filter(to_user=user)
       followers = FollowersModel.objects.filter(user=user)
       products = ProductModel.objects.filter(user=user)
@@ -99,9 +94,8 @@ class GetDataViewSet(GenericViewSet):
             'following': following.exists()
          }
       }
-
       return Response(data=response, status=HTTP_200_OK)
-   
+
    @action(methods=['get'], detail=False, url_path='clients-opinions')
    def clients_opinions(self, request):
       opinions = ClientsOpinionsModel.objects.filter(to_user=request.GET['username'])
@@ -112,13 +106,13 @@ class GetDataViewSet(GenericViewSet):
       
    @action(methods=['get'], detail=False, url_path='contact-networks')
    def contact_networks(self, request):
-      user = ContactNetworksModel.objects.filter(user_id=request.GET['username'])
-      if user.exists():
-         usercontact = model_to_dict(user.first())
+      contact = ContactNetworksModel.objects.filter(user_id=request.GET['username'])
+      if contact.exists():
+         usercontact = model_to_dict(contact.first())
          del usercontact['user']
          return Response(data=usercontact, status=HTTP_200_OK)
       else:
-         raise ValidationError({'user': 'Este usuario no ha registrado redes de contacto.'})
+         return Response(status=HTTP_204_NO_CONTENT)
       
    @action(methods=['post'], detail=False)
    def search(self, request):
@@ -245,7 +239,9 @@ class GetDataViewSet(GenericViewSet):
          response.append(product_response)
       return Response(data=response, status=HTTP_200_OK)
 
-   @action(methods=['get'], detail=False, url_path='profile-picture')
-   def profile_picture(self, request):
-      picture = request.__dict__['_user'].picture
-      return Response(data={'picture': picture or self.blankpicture})
+   @action(methods=['get'], detail=False, url_path='for-global-ui')
+   def for_global_ui(self, request):
+      user = request.__dict__['_user']
+      return Response(data={
+         'username': user.username,
+         'picture': user.picture or self.blankpicture}, status=HTTP_200_OK)
