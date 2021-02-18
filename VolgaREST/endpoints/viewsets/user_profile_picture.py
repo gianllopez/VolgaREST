@@ -18,4 +18,6 @@ class UserProfilePictureViewSet(GenericViewSet, CreateModelMixin):
             public_id=user.username, overwrite=True)['secure_url']
          user.picture = picture
       user.save()
-      return Response(data={'profile-picture': user.picture}, status=HTTP_201_CREATED)
+      blankpic = 'https://res.cloudinary.com/volga/image/upload/v1611089503/blankpp-men.png'
+      response = {'username': user.username, 'picture': user.picture or blankpic}
+      return Response(data=response, status=HTTP_201_CREATED)
