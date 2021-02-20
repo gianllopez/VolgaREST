@@ -52,20 +52,19 @@ class GetDataViewSet(GenericViewSet):
       
    @action(methods=['get'], detail=False)
    def user(self, request):
-      user = UserModel.objects.filter(username=request.GET['username'])
-      if user.exists():
-         user = user.first()
-         opinions = ClientsOpinionsModel.objects.filter(to_user=user)
-         followers = FollowersModel.objects.filter(user=user)
-         products = ProductModel.objects.filter(user=user)
-         clients_ratings, opinions_data = [], []
-         for opinion in opinions:
-            opinion_dict = self.format_opinions(opinion)
-            clients_ratings.append(opinion_dict['rating'])
-            opinions_data.append(opinion_dict)
-         
-         if len(clients_ratings) < 1:
-            clients_ratings = [0]
+      username = request.GET['username']
+      user = UserModel.objects.get(username=username)
+      opinions = ClientsOpinionsModel.objects.filter(to_user=user)
+      followers = FollowersModel.objects.filter(user=user)
+      products = ProductModel.objects.filter(user=user)
+      clients_ratings, opinions_data = [], []
+      for opinion in opinions:
+         opinion_dict = self.format_opinions(opinion)
+         clients_ratings.append(opinion_dict['rating'])
+         opinions_data.append(opinion_dict)
+      
+      if len(clients_ratings) < 1:
+         clients_ratings = [0]
 
          products_data = []
          for product in products:
@@ -95,10 +94,9 @@ class GetDataViewSet(GenericViewSet):
                'following': following.exists()
             }
          }
-         return Response(data=response, status=HTTP_200_OK)
-      else:
-         return Response(status=HTTP_404_NOT_FOUND)
-   
+      }
+      return Response(data=response, status=HTTP_200_OK)
+
    @action(methods=['get'], detail=False, url_path='clients-opinions')
    def clients_opinions(self, request):
       opinions = ClientsOpinionsModel.objects.filter(to_user=request.GET['username'])
@@ -109,13 +107,13 @@ class GetDataViewSet(GenericViewSet):
       
    @action(methods=['get'], detail=False, url_path='contact-networks')
    def contact_networks(self, request):
-      user = ContactNetworksModel.objects.filter(user_id=request.GET['username'])
-      if user.exists():
-         usercontact = model_to_dict(user.first())
+      contact = ContactNetworksModel.objects.filter(user_id=request.GET['username'])
+      if contact.exists():
+         usercontact = model_to_dict(contact.first())
          del usercontact['user']
          return Response(data=usercontact, status=HTTP_200_OK)
       else:
-         raise ValidationError({'user': 'Este usuario no ha registrado redes de contacto.'})
+         return Response(status=HTTP_204_NO_CONTENT)
       
    @action(methods=['post'], detail=False)
    def search(self, request):

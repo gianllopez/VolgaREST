@@ -13,7 +13,7 @@ class ValidationViewSet(GenericViewSet):
    @action(methods=['post'], detail=False, url_path='user-exists')
    def user_exists(self, request):
       username = request.data.get('username', None)
-      if username and username != 'me':
+      if username:
          user = UserModel.objects.filter(username=username)
          return Response (
             status=HTTP_200_OK if user.exists() else HTTP_404_NOT_FOUND)
