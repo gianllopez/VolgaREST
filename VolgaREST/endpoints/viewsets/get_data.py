@@ -13,10 +13,31 @@ from VolgaREST.root.models import (
    FavoritesProducts)
 from random import sample
 
-class GetDataViewSet(GenericViewSet):
+from .formatters import ModelFormatter
 
+class GetDataViewSet(GenericViewSet):
+   
    queryset = UserModel.objects.all()
    blankpicture = 'https://res.cloudinary.com/volga/image/upload/v1611089503/blankpp-men.png'
+   formatter = ModelFormatter()
+
+   def prodisfav(self, key):
+      isfav = FavoritesProducts.objects.filter(product=key)
+      return isfav.exists()
+
+   # Endpoint ready
+   @action(methods=['get'], detail=False)
+   def product(self, request):
+      params = request.GET
+      username, productkey = params['username'], params['productkey']
+      result = ProductModel.objects.filter(user=username, key=productkey)
+      if not result.exists():
+         response = {'status': HTTP_404_NOT_FOUND}
+      else:
+         respdata = self.formatter.product(result.first())
+         respdata['isfav'] = self.prodisfav(respdata['key'])
+         response = {'data': respdata, 'status': HTTP_200_OK}
+      return Response(**response)
 
    def format_opinions(self, opinion_instance):
       opinion_dict = model_to_dict(opinion_instance)
@@ -26,34 +47,10 @@ class GetDataViewSet(GenericViewSet):
       return opinion_dict
 
    @action(methods=['get'], detail=False)
-   def product(self, request):
-      params = request.GET
-      username, productkey = params['username'], params['productkey']
-      result = ProductModel.objects.filter(user=username, key=productkey)
-      if not result.exists():
-         raise ValidationError({'error': 404})
-      else:
-         product_result = result.first()
-         product = model_to_dict(product_result)
-         response = {}
-         response['images'] = [product[x] for x in product if 'image_' in x]
-         for data in product:
-            if 'image_' not in data and data != 'id':
-               response[data] = product[data]
-         tags = response['tags']
-         if tags:
-            response['tags'] = response['tags'].split(', ')
-         else: 
-            del response['tags']
-         if not response['description']:
-            response['description'] = 'Sin descripción'
-         response['isfav'] = FavoritesProducts.objects.filter(product=product_result).exists()
-         return Response(data=response, status=HTTP_200_OK)
-      
-   @action(methods=['get'], detail=False)
    def user(self, request):
       username = request.GET['username']
       user = UserModel.objects.get(username=username)
+      self.formatter.user(user)
       opinions = ClientsOpinionsModel.objects.filter(to_user=user)
       followers = FollowersModel.objects.filter(user=user)
       products = ProductModel.objects.filter(user=user)
@@ -94,7 +91,6 @@ class GetDataViewSet(GenericViewSet):
                'following': following.exists()
             }
          }
-      }
       return Response(data=response, status=HTTP_200_OK)
 
    @action(methods=['get'], detail=False, url_path='clients-opinions')
@@ -120,40 +116,18 @@ class GetDataViewSet(GenericViewSet):
       data = request.data
       query, filter = data['query'], data['filter']
       if query:
+         response = {'data': {'results': []}, 'status': HTTP_200_OK}
          if filter == 'products':
-            result = ProductModel.objects.filter(product__icontains=query)
-            needed_data = ['image_1', 'product', 'price', 'key']
-            if result.exists():
-               response = {'data': {'results': []}, 'status': HTTP_200_OK}
-               for product in result:
-                  product_dict = model_to_dict(product)
-                  product_response = {'user': {}}            
-                  for data in product_dict:
-                     user_info = product_response['user']
-                     user_info['picture'] = product.user.picture or self.blankpicture
-                     user_info['username'] = product.user.username
-                     user_info['name'] = product.user.name               
-                     if data in needed_data:
-                        product_response[data] = product_dict[data]
-                  product_response['isfav'] = FavoritesProducts.objects.filter(product=product).exists()
-                  response['data']['results'].append(product_response)
-            else:
-               response = {'status': HTTP_204_NO_CONTENT}
+            products = ProductModel.objects.filter(product__icontains=query)
+            if products.exists():
+               for product in products:
+                  prod_result = self.formatter.product(product, True)
+                  response['data']['results'].append(prod_result)
          else:
             users = UserModel.objects.filter(username__icontains=query)
-            response = {'data': {'results': []}, 'status': HTTP_200_OK}
             for user in users:
-               user_dict = model_to_dict(user)
-               user_data = {}
-               for data in user_dict:
-                  if data in ['username', 'name', 'picture']:
-                     user_data[data] = user_dict[data]
-                  city = user_dict['city']
-                  country = user_dict['country']
-                  user_data['location'] = f'{city}, {country}'.title()
-                  # import pdb; pdb.set_trace()
-                  user_data['picture'] = user_dict['picture'] or self.blankpicture
-               response['data']['results'].append(user_data)
+               user_result = self.formatter.user(user)
+               user_result['location'] = f'{user.city}, {user.country}'
       else:
          response = {'status': HTTP_204_NO_CONTENT}
       return Response(**response)
@@ -220,25 +194,6 @@ class GetDataViewSet(GenericViewSet):
                product_response['isfav'] = FavoritesProducts.objects.filter(product=userprod.product).exists()               
                feed_response.append(product_response)
       return Response(data=feed_response, status=HTTP_200_OK)
-   
-   @action(methods=['get'], detail=False, url_path='landing-products', authentication_classes=[], permission_classes=[])
-   def landing_products(self, request):
-      products = list(ProductModel.objects.all())
-      random_prods = sample(products, 3)
-      response = []
-      needed_data = ['image_1', 'product', 'price', 'key']
-      for product in random_prods:
-         product_response = {'user': {}}
-         product_dict = model_to_dict(product)
-         for data in product_dict:
-            user_info = product_response['user']
-            user_info['picture'] = product.user.picture or self.blankpicture
-            user_info['username'] = product.user.username
-            user_info['name'] = product.user.name
-            if data in needed_data:
-               product_response[data] = product_dict[data]
-         response.append(product_response)
-      return Response(data=response, status=HTTP_200_OK)
 
    @action(methods=['get'], detail=False, url_path='for-global-ui')
    def for_global_ui(self, request):
