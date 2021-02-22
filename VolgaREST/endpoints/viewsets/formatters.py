@@ -2,7 +2,6 @@ from django.forms import model_to_dict
 
 class ModelFormatter:
 
-
    def fields_filter(self, instance, filter=[], reverse=False):
       instance_dict = model_to_dict(instance)
       filter_result = {}
@@ -15,8 +14,8 @@ class ModelFormatter:
       return filter_result
 
    def user(self, user_instance):
-      return self.fields_filter(
-            instance=product_instance.user,
+      return self.fields_filter (
+            instance=user_instance,
             filter=['username', 'name', 'picture'])
    
    def product(self, product_instance, include_user=False):
@@ -31,29 +30,16 @@ class ModelFormatter:
             else:
                product_response[prodata] = value
       if tags := product_response.get('tags', None):
-         tags = tags.split(', ')
+         product_response['tags'] = tags.split(', ')
       if include_user:
          product_response['user'] = self.user(product_instance.user)
       return product_response
 
-   # def product(self, request): 
-   #    result = ProductModel.objects.filter(user=username, key=productkey)
-   #    if not result.exists():
-   #       raise ValidationError({'error': 404})
-   #    else:
-   #       product_result = result.first()
-   #       product = model_to_dict(product_result)
-   #       response = {}
-   #       response['images'] = [product[x] for x in product if 'image_' in x]
-   #       for data in product:
-   #          if 'image_' not in data and data != 'id':
-   #             response[data] = product[data]
-   #       tags = response['tags']
-   #       if tags:
-   #          response['tags'] = response['tags'].split(', ')
-   #       else: 
-   #          del response['tags']
-   #       if not response['description']:
-   #          response['description'] = 'Sin descripción'
-   #       response['isfav'] = FavoritesProducts.objects.filter(product=product_result).exists()
-   #       return Response(data=response, status=HTTP_200_OK)
+   def clients_opinions(self, opinion_instance):
+      opdata = self.fields_filter(opinion_instance, ['id', 'to_user'], True)
+      opdata['date'] = opinion_instance.date.strftime('%d/%m/%Y')
+      opdata['from'] = opdata.pop('from_user')
+      return opdata
+   
+   def contact_networks(self, cn_instance):
+      return self.fields_filter(cn_instance, ['user'], True)

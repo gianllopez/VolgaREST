@@ -31,20 +31,75 @@ class GetDataViewSet(GenericViewSet):
       params = request.GET
       username, productkey = params['username'], params['productkey']
       result = ProductModel.objects.filter(user=username, key=productkey)
-      if not result.exists():
-         response = {'status': HTTP_404_NOT_FOUND}
-      else:
+      response = {'status': HTTP_404_NOT_FOUND}
+      if result.exists():
          respdata = self.formatter.product(result.first())
          respdata['isfav'] = self.prodisfav(respdata['key'])
          response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
+   
+   # Endpoint ready
+   @action(methods=['post'], detail=False)
+   def search(self, request):
+      query, filter = request.data['query'], request.data['filter']
+      if query:
+         response = {'data': {'results': []}, 'status': HTTP_200_OK}
+         if filter == 'products':
+            products = ProductModel.objects.filter(product__icontains=query)
+            if products.exists():
+               for product in products:
+                  prod_result = self.formatter.product(product, True)
+                  response['data']['results'].append(prod_result)
+         if filter == 'users':
+            users = UserModel.objects.filter(username__icontains=query)
+            if users.exists():
+               for user in users:
+                  user_result = self.formatter.user(user)
+                  user_result['location'] = f'{user.city}, {user.country}'
+                  response['data']['results'].append(user_result)
+      return Response(**response)
 
-   def format_opinions(self, opinion_instance):
-      opinion_dict = model_to_dict(opinion_instance)
-      del opinion_dict['id'], opinion_dict['to_user']
-      opinion_dict['from'] = opinion_dict.pop('from_user')
-      opinion_dict['date'] = opinion_instance.date.strftime('%d/%m/%Y')
-      return opinion_dict
+   # Enpoint ready
+   @action(methods=['get'], detail=False, url_path='clients-opinions')
+   def clients_opinions(self, request):
+      username = request.GET['username']
+      opinions = ClientsOpinionsModel.objects.filter(to_user=username)
+      response = {'data': {'opinions': []}, 'status': HTTP_200_OK}
+      if opinions.exists():
+         for opinion in opinions:
+            opinion_data = self.formatter.clients_opinions(opinion)
+            response['data']['opinions'].append(opinion_data)
+      return Response(**response)
+
+   # Endpoint ready
+   @action(methods=['get'], detail=False, url_path='contact-networks')
+   def contact_networks(self, request):
+      username = request.GET['username']
+      contact = ContactNetworksModel.objects.filter(user=username)
+      response = {'status': HTTP_404_NOT_FOUND}
+      if contact.exists():
+         user_contact = self.formatter.contact_networks(contact.first())
+         response = {'data': user_contact, 'status': HTTP_200_OK}
+      return Response(**response)
+
+
+
+
+   @action(methods=['post'], detail=False)
+   def explore(self, request):
+      querytags = request.data['querytags']
+      explore_results = ProductModel.objects.filter(tags__contains=querytags)
+      response = {'status': HTTP_404_NOT_FOUND}
+      if explore_results.exists():
+         response = {'data': {'results': []}, 'status': HTTP_200_OK}
+         for result in explore_results:
+            result_data = self.formatter.product(result, True)
+            response['data']['results'].append(result_data)
+      return Response(**response)
+
+
+
+
 
    @action(methods=['get'], detail=False)
    def user(self, request):
@@ -91,65 +146,6 @@ class GetDataViewSet(GenericViewSet):
                'following': following.exists()
             }
          }
-      return Response(data=response, status=HTTP_200_OK)
-
-   @action(methods=['get'], detail=False, url_path='clients-opinions')
-   def clients_opinions(self, request):
-      opinions = ClientsOpinionsModel.objects.filter(to_user=request.GET['username'])
-      opinions_data = []
-      for opinion in opinions:
-         opinions_data.append(self.format_opinions(opinion))
-      return Response(data=opinions_data, status=HTTP_200_OK)
-      
-   @action(methods=['get'], detail=False, url_path='contact-networks')
-   def contact_networks(self, request):
-      contact = ContactNetworksModel.objects.filter(user_id=request.GET['username'])
-      if contact.exists():
-         usercontact = model_to_dict(contact.first())
-         del usercontact['user']
-         return Response(data=usercontact, status=HTTP_200_OK)
-      else:
-         return Response(status=HTTP_204_NO_CONTENT)
-      
-   @action(methods=['post'], detail=False)
-   def search(self, request):
-      data = request.data
-      query, filter = data['query'], data['filter']
-      if query:
-         response = {'data': {'results': []}, 'status': HTTP_200_OK}
-         if filter == 'products':
-            products = ProductModel.objects.filter(product__icontains=query)
-            if products.exists():
-               for product in products:
-                  prod_result = self.formatter.product(product, True)
-                  response['data']['results'].append(prod_result)
-         else:
-            users = UserModel.objects.filter(username__icontains=query)
-            for user in users:
-               user_result = self.formatter.user(user)
-               user_result['location'] = f'{user.city}, {user.country}'
-      else:
-         response = {'status': HTTP_204_NO_CONTENT}
-      return Response(**response)
-   
-   @action(methods=['post'], detail=False)
-   def explore(self, request):
-      querytags = request.data['querytags']
-      explore_results = ProductModel.objects.filter(tags__contains=querytags)
-      response = []
-      needed_data = ['image_1', 'product', 'price', 'key']
-      for result in explore_results:
-         product_dict = model_to_dict(result)
-         product_response = {'user': {}}            
-         for data in product_dict:
-            user_info = product_response['user']
-            user_info['picture'] = result.user.picture or self.blankpicture
-            user_info['username'] = result.user.username
-            user_info['name'] = result.user.name               
-            if data in needed_data:
-               product_response[data] = product_dict[data]
-         product_response['isfav'] = FavoritesProducts.objects.filter(product=result).exists()
-         response.append(product_response)
       return Response(data=response, status=HTTP_200_OK)
    
    @action(methods=['get'], detail=False, url_path='favorites-products')
