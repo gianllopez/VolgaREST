@@ -1,3 +1,5 @@
+from VolgaREST.root.models.followers import FollowersModel
+from VolgaREST.root.models import user
 from django.forms import model_to_dict
 
 class ModelFormatter:
@@ -13,7 +15,7 @@ class ModelFormatter:
             filter_result[data] = instance_dict[data]
       return filter_result
 
-   def user(self, user_instance):
+   def user_presentation(self, user_instance):
       return self.fields_filter (
             instance=user_instance,
             filter=['username', 'name', 'picture'])
@@ -35,7 +37,7 @@ class ModelFormatter:
          product_response['user'] = self.user(product_instance.user)
       return product_response
 
-   def clients_opinions(self, opinion_instance):
+   def opinion(self, opinion_instance):
       opdata = self.fields_filter(opinion_instance, ['id', 'to_user'], True)
       opdata['date'] = opinion_instance.date.strftime('%d/%m/%Y')
       opdata['from'] = opdata.pop('from_user')
@@ -43,3 +45,28 @@ class ModelFormatter:
    
    def contact_networks(self, cn_instance):
       return self.fields_filter(cn_instance, ['user'], True)
+   
+   def user_profile(self, instances, username):
+      user_data = {}
+      ratingavg = []
+      for instance in instances:
+         queryset = instances[instance]
+         data_collection = []
+         for data in queryset:
+            method = getattr(self, instance[0:-1])
+            instance_data = method(data)
+            data_collection.append(instance_data)
+            rating = instance_data.get('rating', None)
+            if rating:
+               ratingavg.append(rating)
+         user_data[instance] = data_collection
+      opinions = user_data['opinions']
+      user_data['opinions'] = opinions[0:5] if len(opinions) > 5 else opinions
+      follsobj = FollowersModel.objects
+      n_followers = follsobj.filter(user=username).count()      
+      user_data['stats'] = {
+         'rating_avg': round(sum(ratingavg) / len(ratingavg), 2),
+         'followers': n_followers,
+         'total_products': len(instances['products'])}
+      user_data['following'] = follsobj.filter(follower=username).exists()
+      return user_data

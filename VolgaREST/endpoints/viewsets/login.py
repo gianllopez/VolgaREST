@@ -1,3 +1,4 @@
+import re
 from rest_framework.status import HTTP_200_OK
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -14,4 +15,11 @@ class LoginViewSet(ViewSet):
       serializer = self.serializer_class(data=request.data)
       serializer.is_valid(raise_exception=True)
       authtoken = serializer.save()
-      return Response(data={'user-token': authtoken.key}, status=HTTP_200_OK)
+      user = authtoken.user
+      return Response(data={
+         'uiconstdata': {
+            'username': user.username,
+            'picture': user.picture
+         },
+         'token': authtoken.key
+      }, status=HTTP_200_OK)
