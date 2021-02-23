@@ -1,11 +1,10 @@
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.mixins import CreateModelMixin
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.response import Response
 from VolgaREST.root.models import UserModel
 from cloudinary.uploader import upload
 
-class UserProfilePictureViewSet(GenericViewSet, CreateModelMixin):
+class UserProfilePictureViewSet(GenericViewSet):
    
    queryset = UserModel.objects.all()
 
@@ -15,9 +14,7 @@ class UserProfilePictureViewSet(GenericViewSet, CreateModelMixin):
       if loadedpic:
          picture = upload (
             file=loadedpic.file, folder='profile-pictures/',
-            public_id=user.username, overwrite=True)['secure_url']
-         user.picture = picture
+            public_id=user.username, overwrite=True)
+         user.picture = picture['secure_url']
       user.save()
-      blankpic = 'https://res.cloudinary.com/volga/image/upload/v1611089503/blankpp-men.png'
-      response = {'username': user.username, 'picture': user.picture or blankpic}
-      return Response(data=response, status=HTTP_201_CREATED)
+      return Response(status=HTTP_201_CREATED)
