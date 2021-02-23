@@ -2,12 +2,11 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.authtoken.models import Token
-from rest_framework.mixins import CreateModelMixin
 from ..serializers import LogupSerializer
-from rest_framework.exceptions import ValidationError
 from VolgaREST.root.models import UserModel
+from .data_retrieve.formatter import ModelFormatter
 
-class LogupViewSet(GenericViewSet, CreateModelMixin):
+class LogupViewSet(GenericViewSet):
    
    serializer_class = LogupSerializer
    queryset = UserModel.objects.all()
@@ -21,6 +20,6 @@ class LogupViewSet(GenericViewSet, CreateModelMixin):
       return Response(data={
          'uiconstdata': {
             'username': user.username,
-            'picture': user.picture
+            'picture': user.picture or ModelFormatter.blank_picture(user.gender)
          }, 'token': authtoken.key
       }, status=HTTP_201_CREATED)

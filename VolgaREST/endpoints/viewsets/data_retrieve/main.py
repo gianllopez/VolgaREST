@@ -8,13 +8,11 @@ from VolgaREST.root.models import (
    ProductModel, ContactNetworksModel,
    ClientsOpinionsModel, FollowersModel,
    FavoritesProducts)
-
-from .formatters import ModelFormatter
+from .formatter import ModelFormatter
 
 class GetDataViewSet(GenericViewSet):
    
    queryset = UserModel.objects.all()
-   blankpicture = 'https://res.cloudinary.com/volga/image/upload/v1611089503/blankpp-men.png'
    formatter = ModelFormatter()
 
    def prodisfav(self, key):

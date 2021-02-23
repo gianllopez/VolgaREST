@@ -4,6 +4,15 @@ from django.forms import model_to_dict
 
 class ModelFormatter:
 
+   @staticmethod
+   def blank_picture(gender):
+      urlbase = 'https://res.cloudinary.com/volga/image/upload/v1611089503/'
+      picture = {
+         'masculino': urlbase + 'blankpp-men.png',
+         'femenino': urlbase + 'blankpp-women.png',
+         'no definido': urlbase + 'blankpp-undefined.png'}
+      return picture[gender.lower()]
+
    def fields_filter(self, instance, filter=[], reverse=False):
       instance_dict = model_to_dict(instance)
       filter_result = {}
@@ -16,9 +25,10 @@ class ModelFormatter:
       return filter_result
 
    def user_presentation(self, user_instance):
-      return self.fields_filter (
-            instance=user_instance,
-            filter=['username', 'name', 'picture'])
+      user_data = self.fields_filter(user_instance, ['username', 'name', 'picture'])
+      if not user_data['picture']:
+         user_data['picture'] = self.blank_picture(user_instance.gender)
+      return user_data
    
    def product(self, product_instance, include_user=False):
       product_data = self.fields_filter(product_instance, ['user'], True)
@@ -34,7 +44,7 @@ class ModelFormatter:
       if tags := product_response.get('tags', None):
          product_response['tags'] = tags.split(', ')
       if include_user:
-         product_response['user'] = self.user(product_instance.user)
+         product_response['user'] = self.user_presentation(product_instance.user)
       return product_response
 
    def opinion(self, opinion_instance):
@@ -63,9 +73,10 @@ class ModelFormatter:
       opinions = user_data['opinions']
       user_data['opinions'] = opinions[0:5] if len(opinions) > 5 else opinions
       follsobj = FollowersModel.objects
-      n_followers = follsobj.filter(user=username).count()      
+      n_followers = follsobj.filter(user=username).count()  
+      ratinglength = len(ratingavg)
       user_data['stats'] = {
-         'rating_avg': round(sum(ratingavg) / len(ratingavg), 2),
+         'rating_avg': round(sum(ratingavg) / ratinglength if ratinglength != 0 else 1, 2),
          'followers': n_followers,
          'total_products': len(instances['products'])}
       user_data['following'] = follsobj.filter(follower=username).exists()
