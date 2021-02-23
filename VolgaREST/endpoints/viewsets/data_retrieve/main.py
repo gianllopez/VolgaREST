@@ -57,8 +57,8 @@ class GetDataViewSet(GenericViewSet):
       opinions = ClientsOpinionsModel.objects.filter(to_user=username)
       response = {'data': {'opinions': []}, 'status': HTTP_200_OK}
       if opinions.exists():
-         for opinion in opinions:
-            opinion_data = self.formatter.clients_opinions(opinion)
+         for op in opinions:
+            opinion_data = self.formatter.opinion(op)
             response['data']['opinions'].append(opinion_data)
       return Response(**response)
 

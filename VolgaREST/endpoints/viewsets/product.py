@@ -12,35 +12,26 @@ class NewProductViewSet(ModelViewSet):
    serializer_class = NewProductSerializer
    queryset = ProductModel.objects.all()
 
-   def hostimages(self, images, username, product):
-      toreturn = {}
-      for img in images:
-         if img[1]:
-            imgid = '{}-{}-from-{}'.format(product.replace(' ', '-'), img[0], username)
-            toreturn[img[0]] = upload (
-               file=img[1],
-               folder='products-images/',
-               public_id=imgid
-            )
-      return toreturn['secure_url']
-
    def create(self, request):
       data = request.data
       data['user'] = request.__dict__['_user']
-      images = self.hostimages (
-         images=[(x, data[x]) for x in data if 'image_' in x],
-         username=data['user'].username,
-         product=data['product'])
-      for x in data:
-         if images.get(x, False) and 'image_' in x:
-            data[x] = images[x]
-      data['price'] = '{} {}'.format(data['price'], data['pricetype'])
-      data['key'] = ''.join(choices(ascii_uppercase + digits, k=6))
+      username = data['user'].username
+      images = request.FILES.getlist('images')
+      FOLDER = 'users-assets/{}/products/'.format(username)
+      urls = []
+      for img in images:
+         config = {
+            'file': img.file,
+            'public_id': img.name,
+            'folder': FOLDER + data['product']}
+         urls.append(upload(**config)['secure_url'])
+      data['images'] = ', '.join(urls)
+      data['price'] = '{} {}'.format(data['price'], data.pop('pricetype')[0])
+      data['key'] = ''.join(choices(ascii_uppercase + digits, k=10))
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)
-      serializer.save()
-      return Response (
-         data={
-            'user': data['user'].username,
-            'key': data['key']
-         }, status=HTTP_201_CREATED)
+      product = serializer.save()
+      return Response(data={
+         'username': username,
+         'key': product.key}, status=HTTP_201_CREATED)
+      

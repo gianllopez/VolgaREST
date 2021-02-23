@@ -76,7 +76,7 @@ class ModelFormatter:
       n_followers = follsobj.filter(user=username).count()  
       ratinglength = len(ratingavg)
       user_data['stats'] = {
-         'rating_avg': round(sum(ratingavg) / ratinglength if ratinglength != 0 else 1, 2),
+         'rating_avg': round((sum(ratingavg) / ratinglength) if ratinglength != 0 else 0, 2),
          'followers': n_followers,
          'total_products': len(instances['products'])}
       user_data['following'] = follsobj.filter(follower=username).exists()
