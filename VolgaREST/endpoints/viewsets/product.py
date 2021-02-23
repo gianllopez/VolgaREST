@@ -21,8 +21,8 @@ class NewProductViewSet(ModelViewSet):
                file=img[1],
                folder='products-images/',
                public_id=imgid
-            )
-      return toreturn['secure_url']
+            )['secure_url']
+      return toreturn
 
    def create(self, request):
       data = request.data

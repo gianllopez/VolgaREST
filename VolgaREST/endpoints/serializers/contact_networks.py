@@ -9,7 +9,8 @@ class ContactNetworksSerializer(ModelSerializer):
    def get_complete_url(self, network, contact):
       if contact:
          if network in ['facebook', 'instagram', 'twitter', 'linkedin']:
-            return f'https://www.{network}.com/{contact}'
+            cn = 'in/' + contact if network == 'linkedin' else contact
+            return f'https://www.{network}.com/{cn}'
          else:
             if network != 'user':
                return f'https://wa.me/{contact}' if network == 'whatsapp' else 'mailto:' + contact
