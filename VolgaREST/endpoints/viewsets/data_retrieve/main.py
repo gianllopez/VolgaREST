@@ -2,7 +2,6 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND
 from rest_framework.decorators import action
-from django.forms.models import model_to_dict
 from VolgaREST.root.models import (
    UserModel, ProductModel,
    ProductModel, ContactNetworksModel,
@@ -15,10 +14,6 @@ class GetDataViewSet(GenericViewSet):
    queryset = UserModel.objects.all()
    formatter = ModelFormatter()
 
-   def prodisfav(self, key):
-      isfav = FavoritesProducts.objects.filter(product=key)
-      return isfav.exists()
-
    @action(methods=['get'], detail=False)
    def product(self, request):
       params = request.GET
@@ -27,7 +22,7 @@ class GetDataViewSet(GenericViewSet):
       response = {'status': HTTP_404_NOT_FOUND}
       if result.exists():
          respdata = self.formatter.product(result.first())
-         respdata['isfav'] = self.prodisfav(respdata['key'])
+         # respdata['isfav'] = self.prodisfav(respdata['key'])
          response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    
@@ -88,12 +83,13 @@ class GetDataViewSet(GenericViewSet):
    def favorites_products(self, request):
       user = request.__dict__['_user']
       favs = FavoritesProducts.objects.filter(user=user)
-      response = {'status': HTTP_404_NOT_FOUND}
+      response = {'status': HTTP_204_NO_CONTENT}
       if favs.exists():
          response = {'data': {'favorites': []}, 'status': HTTP_200_OK}
          for fav in favs:
-            fav_data = self.formatter.product(fav.product, True)
-            response['data']['favorites'].append(fav_data)            
+            product = fav.product
+            fav_data = self.formatter.product(product, True)
+            response['data']['favorites'].append(fav_data)
       return Response(**response)
 
    @action(methods=['get'], detail=False)
@@ -112,15 +108,17 @@ class GetDataViewSet(GenericViewSet):
          
    @action(methods=['get'], detail=False)
    def user(self, request):
-      user_query = request.GET['username']
-      query = UserModel.objects.filter(username=user_query)
+      username = request.GET['username']
+      query = UserModel.objects.filter(username=username)
       response = {'status': HTTP_404_NOT_FOUND}
       if query.exists():
          user = query.first()
          opinions = ClientsOpinionsModel.objects.filter(to_user=user)
          products = ProductModel.objects.filter(user=user)
          data_instances = {'opinions': opinions, 'products': products}
-         user_data = self.formatter.user_profile(data_instances, user_query)
+         user_data = self.formatter.user_profile(data_instances, username)
+         fquery = {'user': username, 'follower': request.__dict__['_user']}
+         user_data['following'] = FollowersModel.objects.filter(**fquery).exists()
          user_data |= self.formatter.user_presentation(user)
          response = {'data': user_data, 'status': HTTP_200_OK}
       return Response(**response)

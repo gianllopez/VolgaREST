@@ -1,5 +1,4 @@
-from VolgaREST.root.models.followers import FollowersModel
-from VolgaREST.root.models import user
+from VolgaREST.root.models import FollowersModel, FavoritesProducts
 from django.forms import model_to_dict
 
 class ModelFormatter:
@@ -23,6 +22,10 @@ class ModelFormatter:
          if not reverse and infilter:
             filter_result[data] = instance_dict[data]
       return filter_result
+   
+   def prodisfav(self, key):
+      isfav = FavoritesProducts.objects.filter(product=key)
+      return isfav.exists()
 
    def user_presentation(self, user_instance):
       user_data = self.fields_filter(user_instance, ['username', 'name', 'picture'])
@@ -32,20 +35,13 @@ class ModelFormatter:
    
    def product(self, product_instance, include_user=False):
       product_data = self.fields_filter(product_instance, ['user'], True)
-      product_response = {'images': []}
-      for prodata in product_data:
-         value = product_data[prodata]
-         isimg = 'image_' in prodata
-         if value:
-            if isimg:
-               product_response['images'].append(value)
-            else:
-               product_response[prodata] = value
-      if tags := product_response.get('tags', None):
-         product_response['tags'] = tags.split(', ')
+      product_data['images'] = product_data.pop('images').split(', ')
+      product_data['isfav'] = self.prodisfav(product_instance.key)
+      if tags := product_data.get('tags', None):
+         product_data['tags'] = tags.split(', ')
       if include_user:
-         product_response['user'] = self.user_presentation(product_instance.user)
-      return product_response
+         product_data['user'] = self.user_presentation(product_instance.user)
+      return product_data
 
    def opinion(self, opinion_instance):
       opdata = self.fields_filter(opinion_instance, ['id', 'to_user'], True)
@@ -72,12 +68,10 @@ class ModelFormatter:
          user_data[instance] = data_collection
       opinions = user_data['opinions']
       user_data['opinions'] = opinions[0:5] if len(opinions) > 5 else opinions
-      follsobj = FollowersModel.objects
-      n_followers = follsobj.filter(user=username).count()  
+      n_followers = FollowersModel.objects.filter(user=username).count()  
       ratinglength = len(ratingavg)
       user_data['stats'] = {
          'rating_avg': round((sum(ratingavg) / ratinglength) if ratinglength != 0 else 0, 2),
          'followers': n_followers,
          'total_products': len(instances['products'])}
-      user_data['following'] = follsobj.filter(follower=username).exists()
       return user_data

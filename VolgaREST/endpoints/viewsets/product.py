@@ -1,18 +1,20 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from ..serializers import NewProductSerializer
-from VolgaREST.root.models import ProductModel, UserModel
-from cloudinary.uploader import upload
+from VolgaREST.root.models import ProductModel
+from cloudinary.uploader import upload, destroy
 from random import choices
 from string import ascii_uppercase, digits
 
-class NewProductViewSet(ModelViewSet):
+class ProductsViewSet(GenericViewSet):
    
    serializer_class = NewProductSerializer
    queryset = ProductModel.objects.all()
 
-   def create(self, request):
+   @action(methods=['post'], detail=False)
+   def new(self, request):
       data = request.data
       data['user'] = request.__dict__['_user']
       username = data['user'].username
@@ -34,4 +36,11 @@ class NewProductViewSet(ModelViewSet):
       return Response(data={
          'username': username,
          'key': product.key}, status=HTTP_201_CREATED)
+   
+   @action(methods=['post'], detail=False)
+   def delete(self, request):
+      ProductModel.objects.filter(**request.data).delete()
+      # destroy()
+      return Response(status=HTTP_204_NO_CONTENT)
+      
       
