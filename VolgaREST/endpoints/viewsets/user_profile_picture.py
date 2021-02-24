@@ -12,9 +12,12 @@ class UserProfilePictureViewSet(GenericViewSet):
       loadedpic = request.data['picture']
       user = request.__dict__['_user']
       if loadedpic:
-         picture = upload (
-            file=loadedpic.file, folder='profile-pictures/',
-            public_id=user.username, overwrite=True)
-         user.picture = picture['secure_url']
-      user.save()
+         id = f'{user.username}-profile-picture'
+         config = {
+            'file': loadedpic.file,
+            'folder': f'users-assets/{user.username}',
+            'public_id': 'profile-picture'
+         }
+         user.picture = upload(**config)['secure_url']
+         user.save()
       return Response(status=HTTP_201_CREATED)
