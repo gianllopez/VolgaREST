@@ -16,9 +16,7 @@ class ContactNetworksSerializer(ModelSerializer):
                return f'https://wa.me/{contact}' if network == 'whatsapp' else 'mailto:' + contact
 
    def create(self, validated_data):
-      contact = {}
       for data in validated_data:
          if data != 'user':
-            contact[data] = self.get_complete_url(data, validated_data[data])
-      contact['user'] = validated_data['user']
-      return ContactNetworksModel.objects.create(**contact)
+            validated_data[data] = self.get_complete_url(data, validated_data[data])
+      return ContactNetworksModel.objects.create(**validated_data)
