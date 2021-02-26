@@ -3,9 +3,10 @@ from rest_framework.response import Response
 from rest_framework.status import (
    HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_404_NOT_FOUND)
 from rest_framework.decorators import action
+from rest_framework.authtoken.models import Token
 from VolgaREST.root.models import (
    UserModel, ProductModel, ContactNetworksModel,
-   ClientsOpinionsModel, FollowersModel, FavoritesProducts)
+   ClientsOpinionsModel, FollowersModel, FavoritesProducts, user)
 from .formatter import ModelFormatter
 
 class GetDataViewSet(GenericViewSet):
@@ -13,8 +14,17 @@ class GetDataViewSet(GenericViewSet):
    queryset = UserModel.objects.all()
    formatter = ModelFormatter()
    http_method_names = ['get']
+   noauth = {'authentication_classes': [], 'permission_classes': []}
 
-   @action(detail=False)
+   def is_logged(self, request, include_user=False):
+      authorization = request.headers.get('Authorization', None)
+      if authorization:
+         token = authorization[6::]
+         token_instance = Token.objects.filter(key=token)
+         if token_instance.exists():
+            return True if not include_user else True, token_instance.first().user
+
+   @action(detail=False, **noauth)
    def product(self, request):
       params = request.GET
       username, key = params['username'], params['key']
@@ -25,19 +35,19 @@ class GetDataViewSet(GenericViewSet):
          response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    
-   @action(detail=False)
+   @action(detail=False, **noauth)
    def search(self, request):
       query, filter = request.GET['query'], request.GET['filter']
       if query:
          response = {'data': [], 'status': HTTP_200_OK}
          if filter == 'products':
-            products = ProductModel.objects.filter(product__icontains=query)
+            products = ProductModel.objects.filter(product__istartswith=query)
             if products.exists():
                for product in products:
-                  prod_result = self.formatter.product(product, True)
+                  prod_result = self.formatter.product(product, True, self.is_logged(request))
                   response['data'].append(prod_result)
          if filter == 'users':
-            users = UserModel.objects.filter(username__icontains=query)
+            users = UserModel.objects.filter(username__istartswith=query)
             if users.exists():
                for user in users:
                   user_result = self.formatter.user_presentation(user)
@@ -56,7 +66,7 @@ class GetDataViewSet(GenericViewSet):
             response['data'].append(opinion_data)
       return Response(**response)
 
-   @action(detail=False, url_path='contact-networks')
+   @action(detail=False, url_path='contact-networks', **noauth)
    def contact_networks(self, request):
       username = request.GET['username']
       contact = ContactNetworksModel.objects.filter(user=username)
@@ -67,7 +77,7 @@ class GetDataViewSet(GenericViewSet):
          response = {'data': user_contact, 'status': HTTP_200_OK}
       return Response(**response)
 
-   @action(detail=False)
+   @action(detail=False, **noauth)
    def explore(self, request):
       querytags = request.GET['querytags']
       explore_results = ProductModel.objects.filter(tags__contains=querytags)
@@ -81,20 +91,20 @@ class GetDataViewSet(GenericViewSet):
 
    @action(detail=False, url_path='favorites-products')
    def favorites_products(self, request):
-      user = request.__dict__['_user']
+      user = request.user
       favs = FavoritesProducts.objects.filter(user=user)
       response = {'status': HTTP_204_NO_CONTENT}
       if favs.exists():
          response = {'data': [], 'status': HTTP_200_OK}
          for fav in favs:
             product = fav.product
-            fav_data = self.formatter.product(product, True)
+            fav_data = self.formatter.product(product, True, self.is_logged(request))
             response['data'].append(fav_data)
       return Response(**response)
 
    @action(detail=False)
    def feed(self, request):
-      me = request.__dict__['_user']
+      me = request.user
       users_following = FollowersModel.objects.filter(follower=me)
       response = {'status': HTTP_204_NO_CONTENT}
       if users_following.exists():
@@ -106,19 +116,22 @@ class GetDataViewSet(GenericViewSet):
                response['data'].append(product_data)
       return Response(**response)
          
-   @action(detail=False)
+   @action(detail=False, **noauth)
    def user(self, request):
       username = request.GET['username']
       query = UserModel.objects.filter(username=username)
       response = {'status': HTTP_404_NOT_FOUND}
       if query.exists():
-         user = query.first()
+         user = query.first()         
          opinions = ClientsOpinionsModel.objects.filter(to_user=user)
          products = ProductModel.objects.filter(user=user)
          data_instances = {'opinions': opinions, 'products': products}
          user_data = self.formatter.user_profile(data_instances, username)
-         fquery = {'user': username, 'follower': request.__dict__['_user']}
+         fquery = {'user': username, 'follower': request.user}
          user_data['following'] = FollowersModel.objects.filter(**fquery).exists()
          user_data |= self.formatter.user_presentation(user)
+         logged, user = self.is_logged(request, True)
+         if logged and user.username == username:
+            user_data['itsme'] = True
          response = {'data': user_data, 'status': HTTP_200_OK}
       return Response(**response)

@@ -22,10 +22,6 @@ class ModelFormatter:
          if not reverse and infilter:
             filter_result[data] = instance_dict[data]
       return filter_result
-   
-   def prodisfav(self, key):
-      isfav = FavoritesProducts.objects.filter(product=key)
-      return isfav.exists()
 
    def user_presentation(self, user_instance):
       user_data = self.fields_filter(user_instance, ['username', 'name', 'picture'])
@@ -33,14 +29,17 @@ class ModelFormatter:
          user_data['picture'] = self.blank_picture(user_instance.gender)
       return user_data
    
-   def product(self, product_instance, include_user=False):
+   def product(self, product_instance, include_user=False, isauth=False):
       product_data = self.fields_filter(product_instance, ['user'], True)
       product_data['images'] = product_data.pop('images').split(', ')
-      product_data['isfav'] = self.prodisfav(product_instance.key)
       if tags := product_data.get('tags', None):
          product_data['tags'] = tags.split(', ')
       if include_user:
-         product_data['user'] = self.user_presentation(product_instance.user)
+         user = self.user_presentation(product_instance.user)
+         product_data['user'] = user
+         if isauth:
+            favq = {'user': user['username'], 'product': product_data['key']}
+            product_data['isfav'] = FavoritesProducts.objects.filter(**favq).exists()
       return product_data
 
    def opinion(self, opinion_instance):
