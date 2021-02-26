@@ -1,10 +1,10 @@
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from ..serializers import ClientsOpinionsSerializer
 from VolgaREST.root.models import ClientsOpinionsModel, UserModel
+from . import CreateViewSet
 
-class ClientOpinionsViewSet(ModelViewSet):
+class ClientOpinionsViewSet(CreateViewSet):
 
    serializer_class = ClientsOpinionsSerializer
    queryset = ClientsOpinionsModel.objects.all()

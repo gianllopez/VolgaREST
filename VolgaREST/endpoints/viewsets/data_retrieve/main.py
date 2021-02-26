@@ -26,9 +26,9 @@ class GetDataViewSet(GenericViewSet):
          response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    
-   @action(methods=['post'], detail=False)
+   @action(methods=['get'], detail=False)
    def search(self, request):
-      query, filter = request.data['query'], request.data['filter']
+      query, filter = request.GET['query'], request.GET['filter']
       if query:
          response = {'data': {'results': []}, 'status': HTTP_200_OK}
          if filter == 'products':

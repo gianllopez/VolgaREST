@@ -20,8 +20,7 @@ class ContactNetworksViewSet(ModelViewSet):
    def create(self, request):
       data = request.data
       for field in data:
-         if field != 'email':
-            data[field] = self.get_complete_url(field, data[field])
+         data[field] = self.get_complete_url(field, data[field])
       data['user'] = request.__dict__['_user']
       serializer = self.serializer_class(data=data)
       serializer.is_valid(raise_exception=True)

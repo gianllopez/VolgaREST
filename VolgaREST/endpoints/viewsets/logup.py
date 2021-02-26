@@ -18,7 +18,7 @@ class LogupViewSet(GenericViewSet):
       user = serializer.save()
       authtoken = Token.objects.create(user=user)
       return Response(data={
-         'uiconstdata': {
+         'uiprev': {
             'username': user.username,
             'picture': user.picture or ModelFormatter.blank_picture(user.gender)
          }, 'token': authtoken.key

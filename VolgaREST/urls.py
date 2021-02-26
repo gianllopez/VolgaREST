@@ -5,8 +5,7 @@ from VolgaREST.endpoints import (
     LogupViewSet, ContactNetworksViewSet, UserProfilePictureViewSet,
     ClientOpinionsViewSet, LoginViewSet, ProductsViewSet,
     GetDataViewSet, ValidationViewSet, FollowersViewSet,
-    FavoritesProductsViewSet
-)
+    FavoritesProductsViewSet)
 
 volgaRouter = DefaultRouter()
 apibase = 'api/v1/users'
@@ -17,7 +16,7 @@ volgaRouter.register(apibase + '/profile-picture', UserProfilePictureViewSet)
 volgaRouter.register(apibase + '/opinions', ClientOpinionsViewSet)
 volgaRouter.register(apibase + '/login', LoginViewSet)
 volgaRouter.register(apibase + '/products', ProductsViewSet)
-volgaRouter.register(apibase + '/get-data', GetDataViewSet)
+volgaRouter.register(apibasse + '/get-data', GetDataViewSet)
 volgaRouter.register(apibase + '/validation', ValidationViewSet)
 volgaRouter.register(apibase + '/follow', FollowersViewSet)
 volgaRouter.register(apibase + '/product-fav', FavoritesProductsViewSet)
