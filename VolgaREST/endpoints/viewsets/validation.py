@@ -7,6 +7,7 @@ from rest_framework.response import Response
 class ValidationViewSet(GenericViewSet):
    
    queryset = UserModel.objects.all()
+   authentication_classes = permission_classes = []
 
    @action(methods=['post'], detail=False, url_path='user-exists')
    def user_exists(self, request):
