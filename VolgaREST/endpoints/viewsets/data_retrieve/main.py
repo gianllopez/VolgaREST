@@ -30,7 +30,8 @@ class GetDataViewSet(GenericViewSet):
       result = ProductModel.objects.filter(user=username, key=key)
       response = {'status': HTTP_404_NOT_FOUND}
       if result.exists():
-         respdata = self.formatter.product(result.first())
+         # import pdb; pdb.set_trace()
+         respdata = self.formatter.product(result.first(), isauth=self.is_logged(request))
          response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    
@@ -129,5 +130,7 @@ class GetDataViewSet(GenericViewSet):
          fquery = {'user': username, 'follower': request.user}
          user_data['following'] = FollowersModel.objects.filter(**fquery).exists()
          user_data |= self.formatter.user_presentation(user)
+         if request.user.username == username:
+            user_data['itsme'] = True
          response = {'data': user_data, 'status': HTTP_200_OK}
       return Response(**response)

@@ -29,17 +29,17 @@ class ModelFormatter:
          user_data['picture'] = self.blank_picture(user_instance.gender)
       return user_data
    
-   def product(self, product_instance, include_user=False, isauth=False):
+   def product(self, product_instance, include_user=False, isauth=None):
       product_data = self.fields_filter(product_instance, ['user'], True)
       product_data['images'] = product_data.pop('images').split(', ')
       if tags := product_data.get('tags', None):
          product_data['tags'] = tags.split(', ')
+      user = self.user_presentation(product_instance.user)
       if include_user:
-         user = self.user_presentation(product_instance.user)
          product_data['user'] = user
-         if isauth:
-            favq = {'user': user['username'], 'product': product_data['key']}
-            product_data['isfav'] = FavoritesProducts.objects.filter(**favq).exists()
+      if isauth:
+         favq = {'user': user['username'], 'product': product_data['key']}
+         product_data['isfav'] = FavoritesProducts.objects.filter(**favq).exists()
       return product_data
 
    def opinion(self, opinion_instance):

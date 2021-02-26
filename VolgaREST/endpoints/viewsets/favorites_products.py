@@ -10,7 +10,7 @@ class FavoritesProductsViewSet(CreateViewSet):
    queryset = FavoritesProducts.objects.all()
 
    def create(self, request):
-      request.data['user'] = request.__dict__['_user']
+      request.data['user'] = request.user
       isfav = FavoritesProducts.objects.filter(**request.data)
       if isfav.exists():
          isfav.first().delete()
