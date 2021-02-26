@@ -1,11 +1,10 @@
-from django.contrib.auth.models import User
 from VolgaREST.root.models.user import UserModel
-from rest_framework.viewsets import ModelViewSet
 from VolgaREST.root.models import FollowersModel
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_202_ACCEPTED
+from ..custom import CreateViewSet
 
-class FollowersViewSet(ModelViewSet):
+class FollowersViewSet(CreateViewSet):
 
    queryset = FollowersModel.objects.all()
 

@@ -1,12 +1,12 @@
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.authtoken.models import Token
 from ..serializers import LogupSerializer
 from VolgaREST.root.models import UserModel
 from .data_retrieve.formatter import ModelFormatter
+from ..custom import CreateViewSet
 
-class LogupViewSet(GenericViewSet):
+class LogupViewSet(CreateViewSet):
    
    serializer_class = LogupSerializer
    queryset = UserModel.objects.all()

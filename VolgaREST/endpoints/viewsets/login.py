@@ -1,11 +1,11 @@
 from rest_framework.status import HTTP_200_OK
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
 from ..serializers import LoginSerializer
 from VolgaREST.root.models import UserModel
 from .data_retrieve.formatter import ModelFormatter
+from ..custom import CreateViewSet
 
-class LoginViewSet(ViewSet):
+class LoginViewSet(CreateViewSet):
    
    serializer_class = LoginSerializer
    queryset = UserModel.objects.all()

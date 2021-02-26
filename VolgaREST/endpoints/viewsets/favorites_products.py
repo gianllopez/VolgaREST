@@ -1,10 +1,10 @@
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from ..serializers import FavoritesProductsSerializer
 from VolgaREST.root.models import FavoritesProducts
+from ..custom import CreateViewSet
 
-class FavoritesProductsViewSet(ModelViewSet):
+class FavoritesProductsViewSet(CreateViewSet):
    
    serializer_class = FavoritesProductsSerializer
    queryset = FavoritesProducts.objects.all()

@@ -1,10 +1,10 @@
-from rest_framework.viewsets import GenericViewSet
 from rest_framework.status import HTTP_201_CREATED
 from rest_framework.response import Response
 from VolgaREST.root.models import UserModel
 from cloudinary.uploader import upload
+from ..custom import CreateViewSet
 
-class UserProfilePictureViewSet(GenericViewSet):
+class UserProfilePictureViewSet(CreateViewSet):
    
    queryset = UserModel.objects.all()
 

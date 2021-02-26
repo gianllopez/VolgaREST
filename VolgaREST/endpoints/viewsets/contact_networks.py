@@ -1,10 +1,10 @@
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED
 from ..serializers import ContactNetworksSerializer
 from VolgaREST.root.models import ContactNetworksModel
+from ..custom import CreateViewSet
 
-class ContactNetworksViewSet(ModelViewSet):
+class ContactNetworksViewSet(CreateViewSet):
    
    serializer_class = ContactNetworksSerializer
    queryset = ContactNetworksModel.objects.all()
