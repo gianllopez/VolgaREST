@@ -11,12 +11,12 @@ class ContactNetworksModel(models.Model):
    
    unique_error = {'unique': 'Otro usuario ya registró esta cuenta.'}
 
-   instagram = models.CharField(max_length=30, error_messages=unique_error)
-   facebook = models.CharField(max_length=50, error_messages=unique_error)
-   whatsapp = models.CharField(max_length=15, error_messages=unique_error)
-   twitter = models.CharField(max_length=15, error_messages=unique_error)
-   linkedin = models.CharField(max_length=30, error_messages=unique_error)
-   email = models.EmailField(max_length=100, error_messages=unique_error)
+   instagram = models.CharField(max_length=56, error_messages=unique_error)
+   facebook = models.CharField(max_length=75, error_messages=unique_error)
+   whatsapp = models.CharField(max_length=40, error_messages=unique_error)
+   twitter = models.CharField(max_length=40, error_messages=unique_error)
+   linkedin = models.CharField(max_length=50, error_messages=unique_error)
+   email = models.EmailField(max_length=110, error_messages=unique_error)
 
    fields = [instagram, facebook, whatsapp, twitter, linkedin, email]
    for x in range(6):

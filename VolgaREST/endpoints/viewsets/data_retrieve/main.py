@@ -6,7 +6,7 @@ from VolgaREST.root.models import (
    UserModel, ProductModel,
    ProductModel, ContactNetworksModel,
    ClientsOpinionsModel, FollowersModel,
-   FavoritesProducts)
+   FavoritesProducts, user)
 from .formatter import ModelFormatter
 
 class GetDataViewSet(GenericViewSet):
@@ -64,6 +64,7 @@ class GetDataViewSet(GenericViewSet):
       response = {'status': HTTP_404_NOT_FOUND}
       if contact.exists():
          user_contact = self.formatter.contact_networks(contact.first())
+         user_contact['email'] = 'mailto:{}'.format(user_contact.pop('email'))
          response = {'data': user_contact, 'status': HTTP_200_OK}
       return Response(**response)
 
