@@ -19,13 +19,12 @@ class GetDataViewSet(GenericViewSet):
 
    @action(detail=False, **noauth)
    def product(self, request):
-      import pdb; pdb.set_trace()
       params = request.GET
       username, key = params['username'], params['key']
       result = ProductModel.objects.filter(user=username, key=key)
       response = {'status': HTTP_404_NOT_FOUND}
       if result.exists():
-         respdata = self.formatter.product(result.first())
+         respdata = self.formatter.product(result.first(), req_from=request.user)
          response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    
@@ -39,7 +38,7 @@ class GetDataViewSet(GenericViewSet):
             products = ProductModel.objects.filter(products_q)
             if products.exists():
                for product in products:
-                  prod_result = self.formatter.product(product, True)
+                  prod_result = self.formatter.product(product, True, request.user)
                   response['data'].append(prod_result)
          if filter == 'users':
             users_q = Q(username__istartswith=query) | Q(username__icontains=query)
@@ -81,7 +80,7 @@ class GetDataViewSet(GenericViewSet):
       if explore_results.exists():
          response = {'data': [], 'status': HTTP_200_OK}
          for result in explore_results:
-            result_data = self.formatter.product(result, True)
+            result_data = self.formatter.product(result, True, request.user)
             response['data'].append(result_data)
       return Response(**response)
 
@@ -94,7 +93,7 @@ class GetDataViewSet(GenericViewSet):
          response = {'data': [], 'status': HTTP_200_OK}
          for fav in favs:
             product = fav.product
-            fav_data = self.formatter.product(product, True)
+            fav_data = self.formatter.product(product, True, request.user)
             response['data'].append(fav_data)
       return Response(**response)
 
@@ -108,7 +107,7 @@ class GetDataViewSet(GenericViewSet):
          for following in users_following:
             user_products = ProductModel.objects.filter(user=following.user)
             for product in user_products:
-               product_data = self.formatter.product(product, True)
+               product_data = self.formatter.product(product, True, request.user)
                response['data'].append(product_data)
       return Response(**response)
          
@@ -123,10 +122,12 @@ class GetDataViewSet(GenericViewSet):
          products = ProductModel.objects.filter(user=user)
          data_instances = {'opinions': opinions, 'products': products}
          user_data = self.formatter.user_profile(data_instances, username)
-         fquery = {'user': username, 'follower': user}
-         user_data['following'] = FollowersModel.objects.filter(**fquery).exists()
-         # if user.username == username:
-         #    user_data['itsme'] = True
+         req_user = request.user
+         if req_user.is_authenticated:
+            fquery = {'user': username, 'follower': req_user}
+            user_data['following'] = FollowersModel.objects.filter(**fquery).exists()
+            if request.user.username == username:
+               user_data['itsme'] = True
          user_data |= self.formatter.user_presentation(user)
          response = {'data': user_data, 'status': HTTP_200_OK}
       return Response(**response)

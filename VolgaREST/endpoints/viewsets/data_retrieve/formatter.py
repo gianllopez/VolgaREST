@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from VolgaREST.root.models import FollowersModel, FavoritesProducts
 from django.forms import model_to_dict
 
@@ -29,7 +30,7 @@ class ModelFormatter:
          user_data['picture'] = self.blank_picture(user_instance.gender)
       return user_data
    
-   def product(self, product_instance, include_user=False, isauth=False):
+   def product(self, product_instance, include_user=False, req_from=AnonymousUser):
       product_data = self.fields_filter(product_instance, ['user'], True)
       product_data['images'] = product_data.pop('images').split(', ')
       if tags := product_data.get('tags', None):
@@ -38,9 +39,9 @@ class ModelFormatter:
       if include_user:
          user = self.user_presentation(product_instance.user)
          product_data['user'] = user
-         if isauth:
-            favq = {'user': user['username'], 'product': product_data['key']}
-            product_data['isfav'] = FavoritesProducts.objects.filter(**favq).exists()
+      if req_from.is_authenticated:
+         favq = {'user': req_from, 'product': product_data['key']}
+         product_data['isfav'] = FavoritesProducts.objects.filter(**favq).exists()
       return product_data
 
    def opinion(self, opinion_instance):
