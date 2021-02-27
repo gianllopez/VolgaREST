@@ -10,7 +10,8 @@ class UserProfilePictureViewSet(CreateViewSet):
 
    def create(self, request):
       loadedpic = request.data['picture']
-      user = request.__dict__['_user']
+      user = request.user
+      response = {'status': HTTP_201_CREATED}
       if loadedpic:
          id = f'{user.username}-profile-picture'
          config = {
@@ -20,4 +21,5 @@ class UserProfilePictureViewSet(CreateViewSet):
          }
          user.picture = upload(**config)['secure_url']
          user.save()
-      return Response(status=HTTP_201_CREATED)
+         response['data'] = {'username': user.username, 'picture': user.picture}
+      return Response(**response)

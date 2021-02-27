@@ -25,7 +25,8 @@ class ProductsViewSet(CreateViewSet):
    @action(methods=['post'], detail=False)
    def new(self, request):
       data = request.data
-      data['user'] = request.__dict__['_user']
+      # import pdb; pdb.set_trace()
+      data['user'] = request.user
       data['price'] = '{} {}'.format(data['price'], data.pop('pricetype')[0])
       data['key'] = ''.join(choices(ascii_uppercase + digits, k=10))
       username = data['user'].username

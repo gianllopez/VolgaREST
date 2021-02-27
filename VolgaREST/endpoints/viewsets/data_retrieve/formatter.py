@@ -34,7 +34,7 @@ class ModelFormatter:
       product_data = self.fields_filter(product_instance, ['user'], True)
       product_data['images'] = product_data.pop('images').split(', ')
       if tags := product_data.get('tags', None):
-         product_data['tags'] = tags.split(', ')
+         product_data['tags'] = tags.split(',')
       user = self.user_presentation(product_instance.user)
       if include_user:
          user = self.user_presentation(product_instance.user)
