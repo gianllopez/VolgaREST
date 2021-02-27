@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_201_CREATED, HTTP_409_CONFLICT
 from ..serializers import ContactNetworksSerializer
 from VolgaREST.root.models import ContactNetworksModel
 from ..custom import CreateViewSet
@@ -20,10 +20,13 @@ class ContactNetworksViewSet(CreateViewSet):
    def create(self, request):
       data = request.data
       for field in data:
-         data[field] = self.get_complete_url(field, data[field])
-      data['user'] = request.__dict__['_user']
+         if field != 'email':
+            data[field] = self.get_complete_url(field, data[field])
+      data['user'] = request.user
       serializer = self.serializer_class(data=data)
-      serializer.is_valid(raise_exception=True)
-      serializer.save()
-      return Response(status=HTTP_201_CREATED)
+      if serializer.is_valid():
+         serializer.save()
+         return Response(status=HTTP_201_CREATED)
+      else:
+         return Response(data=serializer.errors, status=HTTP_409_CONFLICT)
 
