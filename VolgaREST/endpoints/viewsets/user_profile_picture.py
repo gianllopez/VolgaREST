@@ -12,7 +12,6 @@ class UserProfilePictureViewSet(CreateViewSet):
       loadedpic = request.data['picture']
       user = request.__dict__['_user']
       if loadedpic:
-         id = f'{user.username}-profile-picture'
          config = {
             'file': loadedpic.file,
             'folder': f'users-assets/{user.username}',
