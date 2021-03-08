@@ -20,12 +20,13 @@ class GetDataViewSet(GenericViewSet):
    @action(detail=False, **noauth)
    def product(self, request):
       params = request.GET
-      username, key = params['username'], params['key']
-      result = ProductModel.objects.filter(user=username, key=key)
+      username, key = params.get('username', None), params.get('key', None)
       response = {'status': HTTP_404_NOT_FOUND}
-      if result.exists():
-         respdata = self.formatter.product(result.first(), req_from=request.user)
-         response = {'data': respdata, 'status': HTTP_200_OK}
+      if username and key:
+         result = ProductModel.objects.filter(user=username, key=key)
+         if result.exists():
+            respdata = self.formatter.product(result.first(), req_from=request.user)
+            response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    
    @action(detail=False, **noauth)

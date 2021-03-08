@@ -17,7 +17,7 @@ class LoginViewSet(CreateViewSet):
       authtoken = serializer.save()
       user = authtoken.user
       return Response(data={
-         'uiconstdata': {
+         'uiprev': {
             'username': user.username,
             'picture': user.picture or ModelFormatter.blank_picture(user.gender)
          }, 'token': authtoken.key

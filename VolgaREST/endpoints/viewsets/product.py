@@ -48,11 +48,13 @@ class ProductsViewSet(CreateViewSet):
    
    @action(methods=['post'], detail=False)
    def delete(self, request):
-      to_delete = ProductModel.objects.filter(**request.data).first()
-      delete_conf = {
-         'username': request.__dict__['_user'].username,
-         'images': to_delete.images.split(', '),
-         'key': to_delete.key}
-      self.host_delete(**delete_conf)
-      to_delete.delete()
+      to_delete = ProductModel.objects.filter(**request.data)
+      if to_delete.exists():
+         to_delete = to_delete.first()
+         delete_conf = {
+            'username': request.user.username,
+            'images': to_delete.images.split(','),
+            'key': to_delete.key}
+         self.host_delete(**delete_conf)
+         to_delete.delete()
       return Response(status=HTTP_204_NO_CONTENT)
