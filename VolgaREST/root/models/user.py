@@ -27,8 +27,10 @@ class UserModel(AbstractBaseUser):
    last_login = None
 
    def save(self, *args, **kwargs):
-      self.name = self.name.title().strip()
-      self.username = self.username.lower().replace(' ', '')
+      self.name = self.name.title()
+      self.username = self.username.lower()
+      self.country = self.country.title()
+      self.city = self.city.title()
       return super().save(*args, **kwargs)
 
    def __str__(self):

@@ -12,6 +12,7 @@ class ContactNetworksViewSet(CreateViewSet):
 
    def get_complete_url(self, network, contact):
       if contact:
+         contact = contact.lower()
          c_urls = ['instagram', 'facebook', 'twitter']
          urls = {a: 'https://www.{}.com/'.format(b) + '{}' for (a, b) in zip(c_urls, c_urls)}
          urls['whatsapp'] = 'https://wa.me/{}'

@@ -1,4 +1,4 @@
-from rest_framework.status import HTTP_201_CREATED
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
 from VolgaREST.root.models import UserModel
 from cloudinary.uploader import upload
@@ -11,9 +11,8 @@ class UserProfilePictureViewSet(CreateViewSet):
    def create(self, request):
       loadedpic = request.data['picture']
       user = request.user
-      response = {'status': HTTP_201_CREATED}
+      response = {'status': HTTP_200_OK}
       if loadedpic:
-         id = f'{user.username}-profile-picture'
          config = {
             'file': loadedpic.file,
             'folder': f'users-assets/{user.username}',
@@ -21,5 +20,10 @@ class UserProfilePictureViewSet(CreateViewSet):
          }
          user.picture = upload(**config)['secure_url']
          user.save()
-         response['data'] = {'username': user.username, 'picture': user.picture}
+         response = {
+            'data': {               
+               'username': user.name,
+               'picture': user.picture
+            }, 'status': HTTP_201_CREATED
+         }
       return Response(**response)
