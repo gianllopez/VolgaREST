@@ -1,26 +1,30 @@
-from django.db.models import CharField, EmailField
+from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 class UserModel(AbstractBaseUser):
 
-   name = CharField(max_length=65)
+   name = models.CharField(max_length=65)
    
-   picture = CharField(max_length=256, blank=True, null=True)
+   picture = models.CharField(max_length=256, blank=True, null=True)
 
-   username = CharField(
+   username = models.CharField(
       max_length=25,
       primary_key=True,
       error_messages={'unique': 'Este nombre de usuario ya fue tomado.'})
    
-   country = CharField(max_length=90)
-   city = CharField(max_length=100)
+   country = models.CharField(max_length=90)
+   city = models.CharField(max_length=100)
 
-   gender = CharField(max_length=20)
+   gender = models.CharField(max_length=20)
 
-   email = EmailField(
+   email = models.EmailField(
       max_length=125,
       unique=True,
       error_messages={'unique': 'Otro usuario usa este correo.'})
+   
+   email_code = models.IntegerField(default=0)
+
+   verified_email = models.BooleanField(default=False, blank=True, null=True)
 
    USERNAME_FIELD = 'username'
    objects = BaseUserManager()

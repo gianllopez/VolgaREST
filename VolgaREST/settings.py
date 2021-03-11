@@ -113,3 +113,8 @@ cloudinary.config(
     api_key='831489528241167', # set in Heroku
     api_secret='NbQSoezo18lW4JuN2r-16z1C5u8' # set in Heroku
 )
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_PASSWORD = 'megazepol04' # put that shit on Heroku venv
+EMAIL_HOST_USER = 'lopezarizagianlucas@gmail.com' # put that shit on Heroku venv
