@@ -20,5 +20,7 @@ class LoginViewSet(CreateViewSet):
          'uiprev': {
             'username': user.username,
             'picture': user.picture or ModelFormatter.blank_picture(user.gender)
-         }, 'token': authtoken.key
-      }, status=HTTP_200_OK)
+         },
+         'token': authtoken.key,
+         'verified_email': user.verified_email,
+         'email': user.email}, status=HTTP_200_OK)
