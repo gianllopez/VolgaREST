@@ -15,7 +15,7 @@ class ContactNetworksModel(models.Model):
    facebook = models.CharField(max_length=75, error_messages=unique_error)
    whatsapp = models.CharField(max_length=40, error_messages=unique_error)
    twitter = models.CharField(max_length=40, error_messages=unique_error)
-   linkedin = models.CharField(max_length=50, error_messages=unique_error)
+   linkedin = models.CharField(max_length=50, error_messages=unique_error) # max_length=60
    email = models.EmailField(max_length=110, error_messages=unique_error)
 
    fields = [instagram, facebook, whatsapp, twitter, linkedin, email]
