@@ -34,4 +34,3 @@ class ContactNetworksViewSet(CreateViewSet):
          user = errors.get('user', None)
          response['status'] = HTTP_409_CONFLICT if user else HTTP_400_BAD_REQUEST
          return Response(**response)
-

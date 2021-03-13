@@ -26,7 +26,6 @@ class GetDataViewSet(GenericViewSet):
          result = ProductModel.objects.filter(user=username, key=key)
          if result.exists():
             respdata = self.formatter.product(result.first(), req_from=request.user)
-            respdata['tags'] = respdata['tags'][0].split(',')
             response = {'data': respdata, 'status': HTTP_200_OK}
       return Response(**response)
    

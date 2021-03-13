@@ -37,7 +37,7 @@ class LogupSerializer(ModelSerializer):
    def validate(self, data):
       to_valid = {
          'name': r'(?!.*\s{2})^[a-zA-ZÀ-úñÑ\s]+$',
-         'username': r'^[a-z0-9]*$'
+         'username': r'^[a-zA-Z0-9]*$'
       }
       errors = self.regex_validator(data, to_valid)
       if errors:
