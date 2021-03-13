@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path
+from django.http import HttpResponse
 from rest_framework.routers import DefaultRouter
 from VolgaREST.endpoints import (
     LogupViewSet, ContactNetworksViewSet, UserProfilePictureViewSet,
@@ -24,3 +25,12 @@ volgaRouter.register(apibase + '/product-fav', FavoritesProductsViewSet)
 urlpatterns = volgaRouter.urls
 
 urlpatterns += [ path('admin/', admin.site.urls) ]
+
+def not_found(request, exception):
+   return HttpResponse('''
+      <h1>Page not found</h1>
+      <h4>You are a dumb and...</h4>
+      <h3>I AM SMARTER THAN YOU.</h3>
+      <p>Have a good day :)</p>''')
+
+handler404 = not_found

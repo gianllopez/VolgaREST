@@ -5,7 +5,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'jmw3-=8bwnu=z0ny6d7fp+%1$gv=hx$8=%6m=1d9t%jncxj(kn'
 
-DEBUG = True
+# DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -98,6 +99,8 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'root.UserModel'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+ALLOWED_HOSTS = ['*']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
