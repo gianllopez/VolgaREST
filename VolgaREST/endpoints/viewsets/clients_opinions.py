@@ -11,7 +11,7 @@ class ClientOpinionsViewSet(CreateViewSet):
    queryset = ClientsOpinionsModel.objects.all()
 
    def create(self, request):
-      request.data['from_user'] = request.__dict__['_user']
+      request.data['from_user'] = request.user
       serializer = self.serializer_class(data=request.data)
       serializer.is_valid(raise_exception=True)
       serializer.save()

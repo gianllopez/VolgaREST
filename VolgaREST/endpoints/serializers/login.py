@@ -10,9 +10,9 @@ class LoginSerializer(Serializer):
 
    def validate(self, data):
       self.user = UserModel.objects.filter(**data)
-      if not self.user:
-         raise ValidationError({'password': 'Nombre de usuario y/o contraseña incorrecto(s).' })
+      if not self.user.exists():
+         raise ValidationError({'password': 'Nombre de usuario y/o contraseña incorrecto(s).'})
       return data
    
    def create(self, validated_data):
-      return Token.objects.get(user=self.user[0])
+      return Token.objects.get(user=self.user.first())

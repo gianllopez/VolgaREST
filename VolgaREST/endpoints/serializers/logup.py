@@ -4,25 +4,11 @@ from VolgaREST.root.models import UserModel
 from re import match
 
 class LogupSerializer(ModelSerializer):
-   
+
    class Meta:
       model = UserModel
-      fields = [
-         'name',
-         'username',
-         'country',
-         'city',
-         'gender',
-         'email',
-         'password'
-      ]
+      exclude = ['picture']
       extra_kwargs = {}
-      for field in fields:
-         extra_kwargs[field] = {
-            'error_messages': {
-               'blank': 'Este campo es requerido.'
-            }
-         }
    
    def regex_validator(self, data, to_valid):
       errors = {}

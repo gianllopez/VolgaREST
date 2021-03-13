@@ -9,9 +9,8 @@ class FollowersViewSet(CreateViewSet):
    queryset = FollowersModel.objects.all()
 
    def create(self, request):
-      follower = request.__dict__['_user']
       user = UserModel.objects.get(username=request.data['user'])
-      query = {'follower': follower, 'user': user}
+      query = {'follower': request.user, 'user': user}
       follower = FollowersModel.objects.filter(**query)
       if follower.exists():
          follower.delete()

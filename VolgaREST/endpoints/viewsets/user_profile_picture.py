@@ -1,4 +1,4 @@
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.response import Response
 from VolgaREST.root.models import UserModel
 from cloudinary.uploader import upload

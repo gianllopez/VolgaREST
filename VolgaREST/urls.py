@@ -23,6 +23,4 @@ volgaRouter.register(apibase + '/product-fav', FavoritesProductsViewSet)
 
 urlpatterns = volgaRouter.urls
 
-urlpatterns += [
-    path('admin/', admin.site.urls)
-]
+urlpatterns += [ path('admin/', admin.site.urls) ]

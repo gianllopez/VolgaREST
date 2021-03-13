@@ -4,13 +4,4 @@ from VolgaREST.root.models import ProductModel
 class NewProductSerializer(ModelSerializer):
    class Meta:
       model = ProductModel
-      fields = [
-         'user',
-         'images',
-         'product',
-         'price',
-         'description',
-         'tags',
-         'key'
-      ]
-      
+      fields = '__all__'

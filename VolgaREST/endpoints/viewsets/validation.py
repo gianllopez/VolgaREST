@@ -1,7 +1,7 @@
 from rest_framework.viewsets import GenericViewSet
 from VolgaREST.root.models import UserModel
 from rest_framework.decorators import action
-from rest_framework.status import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
