@@ -1,7 +1,9 @@
 from rest_framework.viewsets import GenericViewSet
 from VolgaREST.root.models import UserModel
 from rest_framework.decorators import action
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from rest_framework.status import (
+   HTTP_200_OK, HTTP_204_NO_CONTENT,
+   HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND)
 from rest_framework.response import Response
 from django.core.mail import send_mail
 from django.conf import settings
@@ -10,9 +12,12 @@ from random import randint
 class ValidationViewSet(GenericViewSet):
    
    queryset = UserModel.objects.all()
+   authentication_classes = permission_classes = []
 
-   @action(methods=['post'], detail=False, url_path='user-exists',
-           authentication_classes=[], permission_classes=[])
+   def get_user(self, token):
+      return UserModel.objects.get(auth_token=token) 
+
+   @action(methods=['post'], detail=False, url_path='user-exists')
    def user_exists(self, request):
       username = request.data.get('username', None)
       response = {'status': HTTP_404_NOT_FOUND}
@@ -22,10 +27,10 @@ class ValidationViewSet(GenericViewSet):
             response['status'] = HTTP_200_OK
       return Response(**response)
    
-   @action(methods=['post'], detail=False, url_path='email-verification', authentication_classes=[], permission_classes=[])
+   @action(methods=['post'], detail=False, url_path='email-verification')
    def email_verification(self, request):
-      token = request.data['token']
-      user = UserModel.objects.filter(auth_token=token).first()
+      user = self.get_user(token=request.data['token'])
+      response = {'status': HTTP_204_NO_CONTENT}
       if not user.verified_email and not user.email_code:
          email = request.data['email']
          code = ''
@@ -41,12 +46,13 @@ class ValidationViewSet(GenericViewSet):
          if sent:
             user.email_code = code
             user.save()
-      return Response(status=HTTP_200_OK)
+            response['status'] = HTTP_200_OK
+      return Response(**response)
    
    @action(methods=['post'], detail=False, url_path='digits-verification')
    def digits_verification(self, request):
-      digits = int(''.join(request.data))
-      user = request.user
+      digits = int(''.join(request.data['digits']))
+      user = self.get_user(token=request.data['token'])
       response = {'status': HTTP_400_BAD_REQUEST}
       if (user.email_code == digits):
          user.verified_email = True

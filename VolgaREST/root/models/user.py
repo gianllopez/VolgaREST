@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser
+from VolgaREST.root.manager import UserManager
 
 class UserModel(AbstractBaseUser):
 
@@ -26,9 +27,10 @@ class UserModel(AbstractBaseUser):
 
    verified_email = models.BooleanField(default=False)
 
+   is_superuser = models.BooleanField(default=False)
+
    USERNAME_FIELD = 'username'
-   objects = BaseUserManager()
-   last_login = None
+   objects = UserManager()
 
    def save(self, *args, **kwargs):
       self.name = self.name.title()

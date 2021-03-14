@@ -22,5 +22,4 @@ class LoginViewSet(CreateViewSet):
             'picture': user.picture or ModelFormatter.blank_picture(user.gender)
          },
          'token': authtoken.key,
-         'verified_email': user.verified_email,
-         'email': user.email}, status=HTTP_200_OK)
+         'verified_email': user.verified_email}, status=HTTP_200_OK)
