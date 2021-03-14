@@ -9,18 +9,17 @@ from VolgaREST.endpoints import (
     FavoritesProductsViewSet)
 
 volgaRouter = DefaultRouter()
-apibase = 'api/v1/users'
 
-volgaRouter.register(apibase + '/logup', LogupViewSet)
-volgaRouter.register(apibase + '/contact', ContactNetworksViewSet)
-volgaRouter.register(apibase + '/profile-picture', UserProfilePictureViewSet)
-volgaRouter.register(apibase + '/opinions', ClientOpinionsViewSet)
-volgaRouter.register(apibase + '/login', LoginViewSet)
-volgaRouter.register(apibase + '/products', ProductsViewSet)
-volgaRouter.register(apibase + '/get-data', GetDataViewSet)
-volgaRouter.register(apibase + '/validation', ValidationViewSet)
-volgaRouter.register(apibase + '/follow', FollowersViewSet)
-volgaRouter.register(apibase + '/product-fav', FavoritesProductsViewSet)
+volgaRouter.register('api/v1/logup', LogupViewSet)
+volgaRouter.register('api/v1/contact', ContactNetworksViewSet)
+volgaRouter.register('api/v1/profile-picture', UserProfilePictureViewSet)
+volgaRouter.register('api/v1/opinions', ClientOpinionsViewSet)
+volgaRouter.register('api/v1/login', LoginViewSet)
+volgaRouter.register('api/v1/products', ProductsViewSet)
+volgaRouter.register('api/v1/get-data', GetDataViewSet)
+volgaRouter.register('api/v1/validation', ValidationViewSet)
+volgaRouter.register('api/v1/follow', FollowersViewSet)
+volgaRouter.register('api/v1/product-fav', FavoritesProductsViewSet)
 
 urlpatterns = volgaRouter.urls
 

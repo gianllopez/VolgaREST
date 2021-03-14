@@ -1,16 +1,13 @@
 from pathlib import Path
-import cloudinary
-import os
+import os, cloudinary, django_heroku
 
 envget = lambda var : os.environ.get(var)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = envget('SECRET_KEY') # add to heroku venv vars
+SECRET_KEY = envget('SECRET_KEY')
 
 DEBUG = False
-
-ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -105,6 +102,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ['https://volga-644ec.web.app/']
 
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer'
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication'
     ],
@@ -123,3 +123,5 @@ EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_PASSWORD = envget('EMAIL_PASSWORD')
 EMAIL_HOST_USER = 'thevolgaproject2021@gmail.com'
+
+django_heroku.settings(locals())
