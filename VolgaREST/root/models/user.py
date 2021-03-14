@@ -32,7 +32,7 @@ class UserModel(AbstractBaseUser):
 
    def save(self, *args, **kwargs):
       self.name = self.name.title()
-      self.username = self.username.lower()
+      self.username = self.username.lower().replace(' ', '')
       self.country = self.country.title()
       self.city = self.city.title()
       return super().save(*args, **kwargs)
