@@ -22,9 +22,10 @@ class ValidationViewSet(GenericViewSet):
             response['status'] = HTTP_200_OK
       return Response(**response)
    
-   @action(methods=['post'], detail=False, url_path='email-verification')
+   @action(methods=['post'], detail=False, url_path='email-verification', authentication_classes=[], permission_classes=[])
    def email_verification(self, request):
-      user = request.user
+      token = request.data['token']
+      user = UserModel.objects.filter(auth_token=token).first()
       if not user.verified_email and not user.email_code:
          email = request.data['email']
          code = ''
