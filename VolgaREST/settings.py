@@ -1,11 +1,13 @@
 from pathlib import Path
 import cloudinary
+import os
+
+envget = lambda var : os.environ.get(var)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'jmw3-=8bwnu=z0ny6d7fp+%1$gv=hx$8=%6m=1d9t%jncxj(kn'
+SECRET_KEY = envget('SECRET_KEY') # add to heroku venv vars
 
-# DEBUG = True
 DEBUG = False
 
 ALLOWED_HOSTS = []
@@ -100,7 +102,7 @@ AUTH_USER_MODEL = 'root.UserModel'
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://volga-644ec.web.app/']
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -112,12 +114,12 @@ REST_FRAMEWORK = {
 }
 
 cloudinary.config(
-    cloud_name='volga',
-    api_key='831489528241167', # set in Heroku
-    api_secret='NbQSoezo18lW4JuN2r-16z1C5u8' # set in Heroku
+    cloud_name='volga-cloud',
+    api_key=envget('CLOUDINARY_API_KEY'),
+    api_secret=envget('CLOUDINARY_API_SECRET')
 )
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = 'megazepol04' # put that shit on Heroku venv
-EMAIL_HOST_USER = 'lopezarizagianlucas@gmail.com' # put that shit on Heroku venv
+EMAIL_HOST_PASSWORD = envget('EMAIL_PASSWORD')
+EMAIL_HOST_USER = 'thevolgaproject2021@gmail.com'
