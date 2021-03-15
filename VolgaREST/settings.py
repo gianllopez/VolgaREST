@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = envget('SECRET_KEY')
 
-DEBUG = False # False on production
+DEBUG = False
 
 INSTALLED_APPS = [
     'django.contrib.admin',

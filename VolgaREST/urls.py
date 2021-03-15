@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponse
 from rest_framework.routers import DefaultRouter
@@ -22,8 +21,6 @@ volgaRouter.register('api/v1/follow', FollowersViewSet)
 volgaRouter.register('api/v1/product-fav', FavoritesProductsViewSet)
 
 urlpatterns = volgaRouter.urls
-
-urlpatterns += [ path('admin/', admin.site.urls) ]
 
 def not_found(request, exception):
    return HttpResponse('''
