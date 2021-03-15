@@ -26,8 +26,6 @@ class UserModel(AbstractBaseUser):
 
    verified_email = models.BooleanField(default=False)
 
-   is_superuser = models.BooleanField(default=False)
-
    USERNAME_FIELD = 'username'
    objects = BaseUserManager()
 
