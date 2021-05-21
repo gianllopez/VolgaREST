@@ -1,6 +1,6 @@
 # VolgaREST
 ## _The Volga Backend_
-VolgaREST is the backend REST API of the Volga Project.
+VolgaREST is the REST API of the Volga Project.
 ## Technologies
 VolgaREST was developed using:
 - Django.
